@@ -1,20 +1,36 @@
-import * as React from 'react'
-import {View, Text, TextInput} from 'react-native'
-import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
-import * as RootNavigation from '../AdministrarPantallas/RootNavigation'
+/*import React, { useState, useEffect } from 'react';
+import { View, Text } from 'react-native';
+import auth from '@react-native-firebase/auth';
+import PantallaLogin from './PantallaLogin'
+import PantallaPantallaPrincipal from './PantallaPantallaPrincipal'
 
-class PantallaLogging extends React.Component {
-  render(){
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderWidth: 0, borderColor: 'teal', backgroundColor: '#fff'}}>
-        <TextInput style={{ height: 30, borderColor: 'black', borderWidth: 1, width: 180 }}/>
-        <TextInput style={{ height: 30, borderColor: 'black', borderWidth: 1, width: 180 }}/>
-        <BotonPersonal colorFondoBoton='#fff' colorTextoBoton='orange' nombre='Registrarse' accion={() => RootNavigation.navigate('Registro')} />
-        <BotonPersonal colorFondoBoton='#fff' colorTextoBoton='orange' nombre='Login' accion={() => RootNavigation.navigate('PantallaPrincipal')} />
-      </View>
-    )
+function App() {
+  // Set an initializing state whilst Firebase connects
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) setInitializing(false);
   }
-}
 
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
 
-export default PantallaLogging
+  if (initializing) return null;
+
+  if (!user) {
+    return (
+      <PantallaLogin/>
+    );
+  }
+
+  return (
+    <View>
+      <Text>Welcome {user.email}</Text>
+    </View>
+  );
+}*/

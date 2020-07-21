@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "143527896754",
+    "firebase_url": "https://pinchaap-3c1f9.firebaseio.com",
+    "project_id": "pinchaap-3c1f9",
+    "storage_bucket": "pinchaap-3c1f9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:143527896754:android:464773c900a5cadab0cbab",
+        "android_client_info": {
+          "package_name": "com.sprint02"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "143527896754-vl443jeahasjkq0ck8h6l9fumhbla7re.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBt_XSKsNGn-_N5BLR8Jr6su04888tS7SY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "143527896754-vl443jeahasjkq0ck8h6l9fumhbla7re.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,60 +1,52 @@
-import React from 'react'
-import {View,StyleSheet,Text,TextInput,TouchableOpacity} from 'react-native'
+import * as React from 'react'
+import {View, Text, TextInput,StyleSheet,TouchableOpacity} from 'react-native'
 import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
-import { NavigationContext } from '@react-navigation/native';
+import * as RootNavigation from '../AdministrarPantallas/RootNavigation'
 import auth from '@react-native-firebase/auth';
 
-class PantallaRegistro extends React.Component {
+class PantallaLogin extends React.Component {
   state = {
-    nombre: "",
     email: "",
     contrasena: "",
     errorMessage: null
   }
-  createUser = () => {
+  
+  handleLogin = () => {
+    const {email, contrasena} = this.state
     auth()
-      .createUserWithEmailAndPassword(this.state.email, this.state.contrasena)
+      .signInWithEmailAndPassword(email, contrasena)
       .then(() => {
-        userCredentials => {
-          return userCredentials.user.updateProfile({
-            displayName: this.state.nombre
-          })
-        }
-      })
-      .catch(error => {
-        if (error.code === 'auth/email-already-in-use') {
-          console.log('That email address is already in use!');
-          //errorMessage = 'That email address is already in use!'
-        }
+        RootNavigation.navigate('PantallaPrincipal')
+        console.log('User account created & signed in!');
+    })
+    .catch(error => {
+      if (error.code === 'auth/email-already-in-use') {
+        console.log('That email address is already in use!');
+        errorMessage = 'That email address is already in use!'
+      }
 
-        if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
-          //errorMessage = 'That email address is invalid!'
-        }
+      if (error.code === 'auth/invalid-email') {
+        console.log('That email address is invalid!');
+        errorMessage = 'That email address is invalid!'
+      }
 
-        console.error(error);
-        this.setState({errorMessage: error.message})
-        }
-      )
+      console.error(error);
+      }
+    );
   }
-  static contextType = NavigationContext;
+  logoff = () => {
+    auth()
+      .signOut()
+      .then(() => console.log('User signed out!'));
+  }
   render(){
-    const navigation = this.context;
     return (
-      <View style={{ flex: 1}}>
+      <View style={styles.container}>
+        <Text style={styles.greeting}>{'Hola de nuevo. \nBienvenido.'}</Text>
         <View style={styles.errorMessage}>
           {this.state.errorMessage && <Text style={styles.error}>{ this.state.errorMessage }</Text>}
         </View>
         <View style={styles.form}>
-          <View style={{ marginTop: 32 }}>
-            <Text style={styles.inputTitle}>Nombre</Text>
-            <TextInput 
-              style={styles.input}
-              autoCapitalize="none"
-              onChangeText={nombre => this.setState({ nombre })}  
-              value={this.state.nombre}
-            ></TextInput>
-          </View>
           <View>
             <Text style={styles.inputTitle}>Dirección email</Text>
             <TextInput 
@@ -75,11 +67,13 @@ class PantallaRegistro extends React.Component {
             ></TextInput>
           </View>
         </View>
-        <TouchableOpacity style={styles.button} onPress={this.createUser/*() => navigation.navigate('PantallaPrincipal')*/}>
+        <TouchableOpacity style={styles.button} onPress={this.handleLogin/*() => RootNavigation.navigate('PantallaPrincipal')*/}>
           <Text style={{ color: "#FFF", fontWeight: "500" }}>Registrarse</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{ alignSelf: "center", marginTop: 32 }} onPress={/*this.handleLogin*/() => navigation.goBack()}>
-          <Text style={{ fontWeight: "500", color:"#E9446A"}}>atras</Text>
+        <TouchableOpacity style={{ alignSelf: "center", marginTop: 32 }} onPress={/*this.logoff*/() => RootNavigation.navigate('Registro')}>
+          <Text style={{color: "#414959", fontSize: 13}}>
+            ¿Nuevo en Pinchaap? <Text style={{ fontWeight: "500", color:"#E9446A"}}>registrate</Text>
+          </Text>
         </TouchableOpacity>
       </View>
     )
@@ -134,4 +128,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default PantallaRegistro
+export default PantallaLogin
