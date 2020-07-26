@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.airbnb.android.react.maps.MapsPackage;
 import androidx.multidex.MultiDexApplication;
+import com.gettipsi.stripe.StripeReactPackage;
 
 public class MainApplication extends MultiDexApplication  implements ReactApplication {
 
