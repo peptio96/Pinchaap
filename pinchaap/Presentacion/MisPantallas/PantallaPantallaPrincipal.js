@@ -3,31 +3,45 @@ import {View, Text, TouchableNativeFeedback, Image, Platform, StyleSheet, Toucha
 import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
 import { NavigationContext } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 class PantallaPantallaPrincipal extends React.Component {
   static contextType = NavigationContext;
   state = {
     email: "",
-    displayName: ""
+    nombre: ""
   }
   componentDidMount(){
-    const {email, displayName} = auth().currentUser
+    const {email} = auth().currentUser
 
-    this.setState({email, displayName})
+    this.setState({email})
+    firestore().collection('usuarios').doc(email).get().then(documentSnapshot => {
+      console.log(documentSnapshot.get('nombre'))
+      this.setState({nombre: documentSnapshot.get('nombre')})
+    })
   }
   render(){
     const navigation = this.context;
     const signOutUser = () => {
       auth().signOut().then(() => console.log('User signed out!'));
+      firestore().collection('usuarios').doc(this.state.email).get().then(documentSnapshot => {
+        firestore().collection('usuarios').doc(this.state.email).update({conectado: false}).then(console.log('User updated!'))
+      })
       navigation.navigate('Logging')
     };
     return (
       <View style={styles.container}>
         <Text style={styles.greeting}>{'Hola de nuevo. \nBienvenido.'}</Text>
-        <Text style={styles.greeting}>{this.state.displayName!==null ? this.state.displayName : this.state.email}</Text>
-        <Text style={styles.greeting}>{this.state.displayName}</Text>
+        <Text style={styles.greeting}>{this.state.nombre}</Text>
         <TouchableOpacity style={{ alignSelf: "center" }} onPress={() => navigation.navigate('CreandoEvento')}>
           <Text style={{ fontWeight: "500", color:"#E9446A"}}>Crear Evento</Text>
+        </TouchableOpacity>
+        <Text></Text>
+        <TouchableOpacity style={{ alignSelf: "center" }} onPress={() => navigation.navigate('AnadirAmigo')}>
+          <Text style={{ fontWeight: "500", color:"#E9446A"}}>Peticiones</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={{ alignSelf: "center" }} onPress={() => navigation.navigate('Amigos')}>
+          <Text style={{ fontWeight: "500", color:"#E9446A"}}>Amigos</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{marginHorizontal: 30,height: 52,alignItems: "center",justifyContent: "center", marginTop: 32}}

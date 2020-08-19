@@ -3,6 +3,7 @@ import {View, Text, TextInput,StyleSheet,TouchableOpacity} from 'react-native'
 import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
 import * as RootNavigation from '../AdministrarPantallas/RootNavigation'
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 class PantallaLogin extends React.Component {
   state = {
@@ -11,11 +12,17 @@ class PantallaLogin extends React.Component {
     errorMessage: null
   }
   
+  
   handleLogin = () => {
     const {email, contrasena} = this.state
     auth()
       .signInWithEmailAndPassword(email, contrasena)
       .then(() => {
+        firestore().collection('usuarios').doc(this.state.email).get().then(documentSnapshot => {
+          if (documentSnapshot.get('contrasena') === contrasena){
+            firestore().collection('usuarios').doc(this.state.email).update({conectado: true}).then(console.log('User updated!'))
+          }
+        })
         RootNavigation.navigate('PantallaPrincipal')
         console.log('User account created & signed in!');
     })
@@ -48,7 +55,7 @@ class PantallaLogin extends React.Component {
         </View>
         <View style={styles.form}>
           <View>
-            <Text style={styles.inputTitle}>Dirección email</Text>
+            <Text style={styles.inputTitle}>Dirección emailfgsd</Text>
             <TextInput 
               style={styles.input} 
               autoCapitalize="none" 

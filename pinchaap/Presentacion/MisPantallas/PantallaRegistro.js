@@ -3,6 +3,7 @@ import {View,StyleSheet,Text,TextInput,TouchableOpacity} from 'react-native'
 import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
 import { NavigationContext } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 class PantallaRegistro extends React.Component {
   state = {
@@ -15,11 +16,10 @@ class PantallaRegistro extends React.Component {
     auth()
       .createUserWithEmailAndPassword(this.state.email, this.state.contrasena)
       .then(() => {
-        userCredentials => {
-          return userCredentials.user.updateProfile({
-            displayName: this.state.nombre
-          })
-        }
+        firestore().collection('usuarios').doc(this.state.email).set({nombre: this.state.nombre, email: this.state.email, contrasena: this.state.contrasena, conectado: false})
+        .then(() => {
+          console.log('User added!');
+        });
       })
       .catch(error => {
         if (error.code === 'auth/email-already-in-use') {
