@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {View, Text, TextInput,StyleSheet,TouchableOpacity} from 'react-native'
+import {View, Text, TextInput,StyleSheet,TouchableOpacity, ImageBackground} from 'react-native'
 import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
 import * as RootNavigation from '../AdministrarPantallas/RootNavigation'
 import auth from '@react-native-firebase/auth';
@@ -41,48 +41,45 @@ class PantallaLogin extends React.Component {
       }
     );
   }
-  logoff = () => {
-    auth()
-      .signOut()
-      .then(() => console.log('User signed out!'));
-  }
   render(){
     return (
-      <View style={styles.container}>
-        <Text style={styles.greeting}>{'Hola de nuevo. \nBienvenido.'}</Text>
-        <View style={styles.errorMessage}>
-          {this.state.errorMessage && <Text style={styles.error}>{ this.state.errorMessage }</Text>}
-        </View>
-        <View style={styles.form}>
-          <View>
-            <Text style={styles.inputTitle}>Dirección emailfgsd</Text>
-            <TextInput 
-              style={styles.input} 
-              autoCapitalize="none" 
-              onChangeText={email => this.setState({ email })}
-              value={this.state.email}
-            ></TextInput>
+      <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/background.png')}>
+        <View style={styles.container}>
+          <Text style={styles.greeting}>{'Hola de nuevo. \nBienvenido.'}</Text>
+          <View style={styles.errorMessage}>
+            {this.state.errorMessage && <Text style={styles.error}>{ this.state.errorMessage }</Text>}
           </View>
-          <View style={{ marginTop: 32 }}>
-            <Text style={styles.inputTitle}>Contraseña</Text>
-            <TextInput 
-              style={styles.input} 
-              secureTextEntry 
-              autoCapitalize="none"
-              onChangeText={contrasena => this.setState({ contrasena })}  
-              value={this.state.contrasena}
-            ></TextInput>
+          <View style={styles.form}>
+            <View>
+              <Text style={styles.inputTitle}>Dirección email</Text>
+              <TextInput 
+                style={styles.input} 
+                autoCapitalize="none" 
+                onChangeText={email => this.setState({ email })}
+                value={this.state.email}
+              ></TextInput>
+            </View>
+            <View style={{ marginTop: 32 }}>
+              <Text style={styles.inputTitle}>Contraseña</Text>
+              <TextInput 
+                style={styles.input} 
+                secureTextEntry 
+                autoCapitalize="none"
+                onChangeText={contrasena => this.setState({ contrasena })}  
+                value={this.state.contrasena}
+              ></TextInput>
+            </View>
           </View>
+          <TouchableOpacity style={styles.button} onPress={this.handleLogin/*() => RootNavigation.navigate('PantallaPrincipal')*/}>
+            <Text style={{ color: "#FFF", fontWeight: "500" }}>Registrarse</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ alignSelf: "center", marginTop: 32 }} onPress={/*this.logoff*/() => RootNavigation.navigate('Registro')}>
+            <Text style={{color: "#414959", fontSize: 13}}>
+              ¿Nuevo en Pinchaap? <Text style={{ fontWeight: "500", color:"#E9446A"}}>registrate</Text>
+            </Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.button} onPress={this.handleLogin/*() => RootNavigation.navigate('PantallaPrincipal')*/}>
-          <Text style={{ color: "#FFF", fontWeight: "500" }}>Registrarse</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{ alignSelf: "center", marginTop: 32 }} onPress={/*this.logoff*/() => RootNavigation.navigate('Registro')}>
-          <Text style={{color: "#414959", fontSize: 13}}>
-            ¿Nuevo en Pinchaap? <Text style={{ fontWeight: "500", color:"#E9446A"}}>registrate</Text>
-          </Text>
-        </TouchableOpacity>
-      </View>
+      </ImageBackground>
     )
   }
 }

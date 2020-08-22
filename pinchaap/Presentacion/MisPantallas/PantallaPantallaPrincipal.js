@@ -1,5 +1,5 @@
 import React from 'react'
-import {View, Text, TouchableNativeFeedback, Image, Platform, StyleSheet, TouchableOpacity} from 'react-native'
+import {View, Text, TouchableNativeFeedback, Image, Platform, StyleSheet, TouchableOpacity, ImageBackground} from 'react-native'
 import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
 import { NavigationContext } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
@@ -30,30 +30,107 @@ class PantallaPantallaPrincipal extends React.Component {
       navigation.navigate('Logging')
     };
     return (
-      <View style={styles.container}>
-        <Text style={styles.greeting}>{'Hola de nuevo. \nBienvenido.'}</Text>
-        <Text style={styles.greeting}>{this.state.nombre}</Text>
-        <TouchableOpacity style={{ alignSelf: "center" }} onPress={() => navigation.navigate('CreandoEvento')}>
-          <Text style={{ fontWeight: "500", color:"#E9446A"}}>Crear Evento</Text>
-        </TouchableOpacity>
-        <Text></Text>
-        <TouchableOpacity style={{ alignSelf: "center" }} onPress={() => navigation.navigate('AnadirAmigo')}>
-          <Text style={{ fontWeight: "500", color:"#E9446A"}}>Peticiones</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{ alignSelf: "center" }} onPress={() => navigation.navigate('Amigos')}>
-          <Text style={{ fontWeight: "500", color:"#E9446A"}}>Amigos</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{marginHorizontal: 30,height: 52,alignItems: "center",justifyContent: "center", marginTop: 32}}
-          onPress={() => navigation.navigate('VerMapa')}
-          background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
-        >
-            <Image style={{width: 100, height: 100}} source={require('../imagenes/googlemaps.png')} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={signOutUser}>
-          <Text style={{ color: "#FFF", fontWeight: "500" }}>Salir</Text>
-        </TouchableOpacity>
-      </View>
+      <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/backgroundinicio.png')}>
+        <View style={styles.container}>
+          <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
+            <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
+              <View style={{width: '20%'/*, backgroundColor: 'pink'*/}}>
+                <TouchableOpacity
+                  style={{alignItems: "center",justifyContent: "center"}}
+                  onPress={signOutUser}
+                  background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                >
+                    <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_exit.png')} />
+                </TouchableOpacity>
+              </View>
+              <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
+                <Text style={{marginHorizontal: 85}}>Pinchapp</Text>
+              </View>
+            </View>
+            
+          </View>
+          <View style={{flex: 4}}>
+            <View style={{flex: 1}} >
+
+              <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', /*backgroundColor: 'red',*/ width: '100%', height: '120%'}}>
+
+
+
+                <View style={{/*backgroundColor: 'green',*/ flexDirection: 'column',width:"50%"}}>
+                  <View /*style={{backgroundColor: 'pink'}}*/>
+                    <TouchableOpacity
+                      style={{alignItems: "center",justifyContent: "center"}}
+                      onPress={() => navigation.navigate('EventosPrincipal')}
+                      background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                    >
+                        <Image style={{width: 120, height: 120}} source={require('../imagenes/logo_eventos.png')} />
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={{textAlign: 'center'}}>Evento</Text>
+                </View>
+
+
+
+                <View style={{/*backgroundColor: 'green', */flexDirection: 'column',width:"50%"}}>
+                  <View /*style={{backgroundColor: 'pink'}}*/>
+                    <TouchableOpacity
+                      style={{alignItems: "center",justifyContent: "center"}}
+                      onPress={() => navigation.navigate('Amigos')}
+                      background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                    >
+                        <Image style={{width: 120, height: 120}} source={require('../imagenes/logo_amigos.png')} />
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={{textAlign: 'center'}}>Amigos</Text>
+                </View>
+
+
+
+              </View>
+            </View>
+
+            <View style={{flex: 1}}>
+              <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', /*backgroundColor: 'red', */width: '100%', height: '70%'}}>
+
+
+
+                
+
+                <View style={{/*backgroundColor: 'green', */flexDirection: 'column',width:"50%"}}>
+                  <View /*style={{backgroundColor: 'pink'}}*/>
+                    <TouchableOpacity
+                      style={{alignItems: "center",justifyContent: "center"}}
+                      onPress={() => navigation.navigate('VerMapa')}
+                      background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                    >
+                        <Image style={{width: 120, height: 120}} source={require('../imagenes/logo_mapa.png')} />
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={{textAlign: 'center'}}>Mapa</Text>
+                </View>
+
+
+                <View style={{/*backgroundColor: 'green', */flexDirection: 'column',width:"50%"}}>
+                  <View /*style={{backgroundColor: 'pink'}}*/>
+                    <TouchableOpacity
+                      style={{alignItems: "center",justifyContent: "center"}}
+                      onPress={() => navigation.navigate('AnadirAmigo')}
+                      background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                    >
+                        <Image style={{width: 120, height: 120}} source={require('../imagenes/logo_puntos.png')} />
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={{textAlign: 'center'}}>Peticiones</Text>
+                </View>
+
+
+                
+              </View>
+            </View>
+          </View>
+          
+        </View>
+      </ImageBackground>
     )
   }
 }

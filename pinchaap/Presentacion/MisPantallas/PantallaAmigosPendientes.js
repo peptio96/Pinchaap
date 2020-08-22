@@ -1,5 +1,5 @@
 import React from 'react'
-import {View, Text, TextInput, StyleSheet, TouchableOpacity} from 'react-native'
+import {View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Image} from 'react-native'
 import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
 import { NavigationContext } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
@@ -90,10 +90,11 @@ class PantallaAmigosPendientes extends React.Component {
         }
       }
     })
+    /* this.forceUpdate()
+    this.setState({state: this.state}) */
   }
 
   handleEliminarPeticion = (peticion) => {
-
     firestore().collection('usuarios').doc(this.state.email).get().then(documentSnapshot => {
       console.log('  usuario existe: ', documentSnapshot.exists)
       if(documentSnapshot.exists){
@@ -112,9 +113,15 @@ class PantallaAmigosPendientes extends React.Component {
         firestore().collection('usuarios').doc(this.state.email).update({peticiones: datosPeticiones})
         if(numeroPeticiones == 1){
           firestore().collection('usuarios').doc(this.state.email).update({peticiones: firestore.FieldValue.delete()})
+          this.setState({hayPeticiones: false})
         }
+        this.setState({datosPeticiones: datosPeticiones})
       }
     })
+    
+    /* this.render()
+    this.forceUpdate()
+    this.setState({state: this.state}) */
   }
   
   render(){
@@ -123,48 +130,129 @@ class PantallaAmigosPendientes extends React.Component {
       const listaPeticiones = Object.values(this.state.datosPeticiones).map((peticion) => {
         {console.log('  peticion listaPeticiones: ', peticion)}
         return(
-          <View style={{flex: 1,flexDirection: 'row'}}>
-            <Text>{peticion}</Text>
-            <Text>     </Text>
-            <TouchableOpacity onPress={() => {
-              this.handleAceptarAmistad(peticion)
-              this.handleEliminarPeticion(peticion)
-            }}>
-              <Text style={{ fontWeight: "500", color:"#E9446A"}}>Aceptar peticion</Text>
-            </TouchableOpacity>
-            <Text>     </Text>
-            <TouchableOpacity onPress={() => {
-              this.handleEliminarPeticion(peticion)
-            }}>
-              <Text style={{ fontWeight: "500", color:"#E9446A"}}>Cancelar peticion</Text>
-            </TouchableOpacity>
+          <View key={peticion} style={{flex: 1}}>
+            <View style={{/* backgroundColor: 'red',  */height: 50, flexDirection: 'row'}}>
+              <View style={{/* backgroundColor: 'red', */ width:50,height: 50}}>
+                <Image style={{width: 50, height: 50}} source={require('../imagenes/amigo.png')}></Image>
+              </View>
+              <View style={{/* backgroundColor: 'pink', */ height: 50,width: '80%', flexDirection: 'column'}}>
+                <Text style={{textAlign: 'center', fontWeight: 'bold',fontSize: 18,marginTop: 0, justifyContent: 'center' }}>{peticion}</Text>
+                <View style={{/* backgroundColor: 'white', */ height: 50, flexDirection: 'row', justifyContent: 'center'}}>
+                  <TouchableOpacity onPress={() => {
+                    this.handleAceptarAmistad(peticion)
+                    this.handleEliminarPeticion(peticion)
+                  }}>
+                    <Text style={{fontWeight: "500", color:"#E9446A"}}>Aceptar peticion</Text>
+                  </TouchableOpacity>
+                  <Text>     </Text>
+                  <TouchableOpacity onPress={() => {
+                    this.handleEliminarPeticion(peticion)
+                    this.componentDidMount
+                  }}>
+                    <Text style={{ fontWeight: "500", color:"#E9446A"}}>Cancelar peticion</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+            
+            
           </View>
-          
         )
-        
       })
       return (
         <View style={styles.container}>
-          
-          <Text>Peticiones</Text>
-          <View style={{flex: 1,flexDirection: 'column'}}>
-            {listaPeticiones}
+          <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
+            <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
+              <View style={{width: '20%'/*, backgroundColor: 'pink'*/}}>
+                <TouchableOpacity
+                  style={{alignItems: "center",justifyContent: "center"}}
+                  onPress={() => navigation.navigate('PantallaPrincipal')}
+                  background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                >
+                    <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_grande.png')} />
+                </TouchableOpacity>
+              </View>
+              <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
+                <Text style={{marginHorizontal: 85}}>Pinchapp</Text>
+              </View>
+            </View>
+          </View>
+          <View style={{flex: 4}}>
+            <View style={{flexDirection: 'row', width: '100%', height: '100%'}}>
+              <View style={{flex: 4/*, backgroundColor: 'red'*/, left: 20}}>
+                <Text>Peticiones</Text>
+                <View style={{flex: 1,flexDirection: 'column', justifyContent: 'flex-start', marginTop: 20}}>
+                  {listaPeticiones}
+                  <View style={{flex: 2}}></View>
+                </View>
+              </View>
+              <View style={{flex: 0.5, /*backgroundColor: 'green',*/ justifyContent: 'center'}}>
+                <TouchableOpacity
+                  style={{alignItems: "center",justifyContent: "center"}}
+                  onPress={() => navigation.goBack()}
+                  background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                >
+                  <Image style={{width: 50, height: 350}} source={require('../imagenes/logo_flechadcha.png')} />
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         </View>
       )
     }else{
       return (
         <View style={styles.container}>
-          <Text>No hay peticiones</Text>
-          <TouchableOpacity style={{ alignSelf: "center" }} onPress={() => navigation.goBack()}>
-            <Text style={{ fontWeight: "500", color:"#E9446A"}}>Go back</Text>
-          </TouchableOpacity>
+          <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
+            <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
+              <View style={{width: '20%'/*, backgroundColor: 'pink'*/}}>
+                <TouchableOpacity
+                  style={{alignItems: "center",justifyContent: "center"}}
+                  onPress={() => navigation.navigate('PantallaPrincipal')}
+                  background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                >
+                    <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_grande.png')} />
+                </TouchableOpacity>
+              </View>
+              <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
+                <Text style={{marginHorizontal: 85}}>Pinchapp</Text>
+              </View>
+            </View>
+          </View>
+          <View style={{flex: 4, left: 20}}>
+            <View style={{flexDirection: 'row', width: '100%', height: '100%'}}>
+              <View style={{flex: 2, /* backgroundColor: 'red', */ left: 20}}>
+                <Text>No hay peticiones</Text>
+              </View>
+              <View style={{flex: 0.5, /*backgroundColor: 'green',*/ justifyContent: 'center'}}>
+                <TouchableOpacity
+                  style={{alignItems: "center",justifyContent: "center"}}
+                  onPress={() => navigation.goBack()}
+                  background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                >
+                  <Image style={{width: 50, height: 350}} source={require('../imagenes/logo_flechadcha.png')} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
         </View>
       )
     }
     
   }
 }
+/**
+ * <Text>No hay peticiones</Text>
+            <TouchableOpacity style={{ alignSelf: "center" }} onPress={() => navigation.goBack()}>
+              <Text style={{ fontWeight: "500", color:"#E9446A"}}>Go back</Text>
+            </TouchableOpacity>
+
+
+
+            <Text>Peticiones</Text>
+            <View style={{flex: 1,flexDirection: 'column'}}>
+              {listaPeticiones}
+            </View>
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1

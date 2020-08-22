@@ -1,5 +1,5 @@
 import React from 'react'
-import {View, Text, TextInput, StyleSheet, TouchableOpacity} from 'react-native'
+import {View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Image, ImageBackground} from 'react-native'
 import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
 import { NavigationContext } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
@@ -57,30 +57,76 @@ class PantallaAmigos extends React.Component {
       const listaAmigos = Object.values(this.state.datosAmigos).map((amigo) => {
         {console.log('  peticion listaPeticiones: ', amigo)}
         return(
-          <View style={{flex: 1,flexDirection: 'row'}}>
-            <Text>{amigo}</Text>
+          <View key={amigo} style={{/* backgroundColor: 'red',  */flex: 1, height: 50, flexDirection: 'row'}}>
+            <View style={{/* backgroundColor: 'red', */ width:50,height: 50}}>
+              <Image style={{width: 50, height: 50}} source={require('../imagenes/amigo.png')}></Image>
+            </View>
+            <View style={{/* backgroundColor: 'pink', */ height: 50,width: '80%', flexDirection: 'column'}}>
+              <Text style={{textAlign: 'center', fontWeight: 'bold',fontSize: 18,marginTop: 0, justifyContent: 'center' }}>{amigo}</Text>
+            </View>
           </View>
-          
         )
         
       })
       return (
-        <View style={styles.container}>
-          
-          <Text>Peticiones</Text>
-          <View style={{flex: 1,flexDirection: 'column'}}>
-            {listaAmigos}
+        <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/backgroundsecundarias.png')}>
+          <View style={styles.container}>
+            <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
+              <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
+                <View style={{width: '20%'/*, backgroundColor: 'pink'*/}}>
+                  <TouchableOpacity
+                    style={{alignItems: "center",justifyContent: "center"}}
+                    onPress={() => navigation.navigate('PantallaPrincipal')}
+                    background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                  >
+                      <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_grande.png')} />
+                  </TouchableOpacity>
+                </View>
+                <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
+                  <Text style={{marginHorizontal: 85}}>Pinchapp</Text>
+                </View>
+              </View>
+            </View>
+            <View style={{flex: 4, left: 20}}>
+              <Text>Amigos</Text>
+              <View style={{flex: 1,flexDirection: 'column', justifyContent: 'flex-start', marginTop: 20}}>
+                {listaAmigos}
+                <View style={{flex: 2}}/>
+              </View>
+            </View>
+            
           </View>
-        </View>
+        </ImageBackground>
       )
     }else{
       return (
-        <View style={styles.container}>
-          <Text>No hay amigos</Text>
-          <TouchableOpacity style={{ alignSelf: "center" }} onPress={() => navigation.goBack()}>
-            <Text style={{ fontWeight: "500", color:"#E9446A"}}>Go back</Text>
-          </TouchableOpacity>
-        </View>
+        <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/backgroundsecundarias.png')}>
+          <View style={styles.container}>
+            <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
+              <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
+                <View style={{width: '20%'/*, backgroundColor: 'pink'*/}}>
+                  <TouchableOpacity
+                    style={{alignItems: "center",justifyContent: "center"}}
+                    onPress={() => navigation.navigate('PantallaPrincipal')}
+                    background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                  >
+                      <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_grande.png')} />
+                  </TouchableOpacity>
+                </View>
+                <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
+                  <Text style={{marginHorizontal: 85}}>Pinchapp</Text>
+                </View>
+              </View>
+            </View>
+            <View style={{flex: 4, left: 20}}>
+              <View style={{flexDirection: 'row', width: '100%', height: '100%'}}>
+                <View style={{flex: 2, /* backgroundColor: 'red', */ left: 20}}>
+                  <Text>No hay amigos</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </ImageBackground>
       )
     }
     

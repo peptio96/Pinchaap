@@ -1,5 +1,5 @@
 import React from 'react'
-import {View, Text, TextInput, StyleSheet, TouchableOpacity} from 'react-native'
+import {View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Image} from 'react-native'
 import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
 import { NavigationContext } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
@@ -73,29 +73,63 @@ class PantallaAnadirAmigo extends React.Component {
     const navigation = this.context;
     return (
       <View style={styles.container}>
-        <View style={styles.form}>
-          <View>
-            <Text style={styles.inputTitle}>{this.state.nombre}</Text>
-            <Text style={styles.inputTitle}>{this.state.email}</Text>
-            <Text style={styles.inputTitle}>Dirección email</Text>
-            <TextInput 
-              style={styles.input} 
-              autoCapitalize="none" 
-              onChangeText={emailPeticion => this.setState({ emailPeticion })}
-            ></TextInput>
+        <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
+          <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
+            <View style={{width: '20%'/*, backgroundColor: 'pink'*/}}>
+              <TouchableOpacity
+                style={{alignItems: "center",justifyContent: "center"}}
+                onPress={() => navigation.goBack()}
+                background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+              >
+                  <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_grande.png')} />
+              </TouchableOpacity>
+            </View>
+            <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
+              <Text style={{marginHorizontal: 85}}>Pinchapp</Text>
+            </View>
           </View>
         </View>
-        <TouchableOpacity style={{ alignSelf: "center" }} onPress={this.handleEnviarInvitacion}>
-          <Text style={{ fontWeight: "500", color:"#E9446A"}}>Enviar peticion</Text>
-        </TouchableOpacity>
-        <Text></Text>
-        <TouchableOpacity style={{ alignSelf: "center" }} onPress={() => navigation.navigate('AmigosPendientes')}>
-          <Text style={{ fontWeight: "500", color:"#E9446A"}}>Pendientes amigos</Text>
-        </TouchableOpacity>
-        <Text></Text>
-        <TouchableOpacity style={{ alignSelf: "center" }} onPress={() => navigation.goBack()}>
-          <Text style={{ fontWeight: "500", color:"#E9446A"}}>Go back</Text>
-        </TouchableOpacity>
+        <View style={{flex: 4}}>
+          <View style={{flexDirection: 'row',flex: 1, position: 'relative', justifyContent: 'center',/* backgroundColor: 'red',*/ width: '100%', height: '100%'}} >
+            <View style={{flexDirection: 'row'}}>
+
+              <View style={{height: '100%',justifyContent: 'center', width: '10%', alignItems: 'center', /*backgroundColor: 'red'*/}}>
+                <TouchableOpacity
+                  style={{alignItems: "center",justifyContent: "center"}}
+                  onPress={() => navigation.navigate('AmigosPendientes')}
+                  background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                >
+                  <Image style={{width: 50, height: 350}} source={require('../imagenes/logo_flechaizda.png')} />
+                </TouchableOpacity>
+              </View>
+
+              <View style={{height: '100%',justifyContent: 'center', width: '80%', alignItems: 'center', /*backgroundColor: 'green'*/}}>
+                <Text style={styles.inputTitle}>Buscar amigos</Text>
+                <TextInput 
+                  style={styles.input} 
+                  autoCapitalize="none" 
+                  onChangeText={emailPeticion => this.setState({ emailPeticion })}
+                ></TextInput>
+                <TouchableOpacity style={{ alignSelf: "center" }} onPress={this.handleEnviarInvitacion}>
+                  <Text style={{ fontWeight: "500", color:"#E9446A"}}>Enviar peticion</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={{height: '100%',justifyContent: 'center', width: '10%', alignItems: 'center', /*backgroundColor: 'red'*/}}>
+                <TouchableOpacity
+                  style={{alignItems: "center",justifyContent: "center"}}
+                  onPress={() => navigation.navigate('AmigosPendientes')}
+                  background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                >
+                  <Image style={{width: 50, height: 350}} source={require('../imagenes/logo_flechadcha.png')} />
+                </TouchableOpacity>
+              </View> 
+              
+            </View>
+          </View>
+        </View>
+        
+        
       </View>
     )
   }
@@ -136,7 +170,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     height: 40,
     fontSize: 15,
-    color: "#161F3D"
+    color: "#161F3D",
+    width: 200
   },
   button: {
     marginHorizontal: 30,

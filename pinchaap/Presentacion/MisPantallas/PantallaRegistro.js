@@ -1,5 +1,5 @@
 import React from 'react'
-import {View,StyleSheet,Text,TextInput,TouchableOpacity} from 'react-native'
+import {View,StyleSheet,Text,TextInput,TouchableOpacity, ImageBackground} from 'react-native'
 import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
 import { NavigationContext } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
@@ -41,47 +41,49 @@ class PantallaRegistro extends React.Component {
   render(){
     const navigation = this.context;
     return (
-      <View style={{ flex: 1}}>
-        <View style={styles.errorMessage}>
-          {this.state.errorMessage && <Text style={styles.error}>{ this.state.errorMessage }</Text>}
+      <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/background.png')}>
+        <View style={{ flex: 1}}>
+          <View style={styles.errorMessage}>
+            {this.state.errorMessage && <Text style={styles.error}>{ this.state.errorMessage }</Text>}
+          </View>
+          <View style={styles.form}>
+            <View style={{ marginTop: 32 }}>
+              <Text style={styles.inputTitle}>Nombre</Text>
+              <TextInput 
+                style={styles.input}
+                autoCapitalize="none"
+                onChangeText={nombre => this.setState({ nombre })}  
+                value={this.state.nombre}
+              ></TextInput>
+            </View>
+            <View>
+              <Text style={styles.inputTitle}>Dirección email</Text>
+              <TextInput 
+                style={styles.input} 
+                autoCapitalize="none" 
+                onChangeText={email => this.setState({ email })}
+                value={this.state.email}
+              ></TextInput>
+            </View>
+            <View style={{ marginTop: 32 }}>
+              <Text style={styles.inputTitle}>Contraseña</Text>
+              <TextInput 
+                style={styles.input} 
+                secureTextEntry 
+                autoCapitalize="none"
+                onChangeText={contrasena => this.setState({ contrasena })}  
+                value={this.state.contrasena}
+              ></TextInput>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.button} onPress={this.createUser/*() => navigation.navigate('PantallaPrincipal')*/}>
+            <Text style={{ color: "#FFF", fontWeight: "500" }}>Registrarse</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ alignSelf: "center", marginTop: 32 }} onPress={/*this.handleLogin*/() => navigation.goBack()}>
+            <Text style={{ fontWeight: "500", color:"#E9446A"}}>atras</Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.form}>
-          <View style={{ marginTop: 32 }}>
-            <Text style={styles.inputTitle}>Nombre</Text>
-            <TextInput 
-              style={styles.input}
-              autoCapitalize="none"
-              onChangeText={nombre => this.setState({ nombre })}  
-              value={this.state.nombre}
-            ></TextInput>
-          </View>
-          <View>
-            <Text style={styles.inputTitle}>Dirección email</Text>
-            <TextInput 
-              style={styles.input} 
-              autoCapitalize="none" 
-              onChangeText={email => this.setState({ email })}
-              value={this.state.email}
-            ></TextInput>
-          </View>
-          <View style={{ marginTop: 32 }}>
-            <Text style={styles.inputTitle}>Contraseña</Text>
-            <TextInput 
-              style={styles.input} 
-              secureTextEntry 
-              autoCapitalize="none"
-              onChangeText={contrasena => this.setState({ contrasena })}  
-              value={this.state.contrasena}
-            ></TextInput>
-          </View>
-        </View>
-        <TouchableOpacity style={styles.button} onPress={this.createUser/*() => navigation.navigate('PantallaPrincipal')*/}>
-          <Text style={{ color: "#FFF", fontWeight: "500" }}>Registrarse</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{ alignSelf: "center", marginTop: 32 }} onPress={/*this.handleLogin*/() => navigation.goBack()}>
-          <Text style={{ fontWeight: "500", color:"#E9446A"}}>atras</Text>
-        </TouchableOpacity>
-      </View>
+      </ImageBackground>
     )
   }
 }
