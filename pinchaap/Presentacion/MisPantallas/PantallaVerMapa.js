@@ -16,6 +16,12 @@ const styles = StyleSheet.create({
 
 class PantallaVerMapa extends React.Component {
   static contextType = NavigationContext;
+  /* componentWillUnmount(){
+    auth().signOut().then(() => console.log('User signed out!'));
+    firestore().collection('usuarios').doc(this.state.email).get().then(documentSnapshot => {
+      firestore().collection('usuarios').doc(this.state.email).update({conectado: false}).then(console.log('User updated!'))
+    })
+  } */
   render(){
     const navigation = this.context;
     return (
@@ -32,7 +38,7 @@ class PantallaVerMapa extends React.Component {
                 </TouchableOpacity>
               </View>
               <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
-                <Text style={{marginHorizontal: 85}}>Pinchapp</Text>
+                <Image style={{width: 120, height: 50, marginHorizontal: 52, marginTop: 10}}  source={require('../imagenes/fuente.png')} />
               </View>
             </View>
           </View>

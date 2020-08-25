@@ -5,14 +5,15 @@ import { NavigationContext } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
-class PantallaAmigosPendientes extends React.Component {
+class PantallaPeticionesEventos extends React.Component {
   static contextType = NavigationContext;
   state = {
     email: "",
     nombre: "",
     hayPeticiones: true,
     datosPeticiones: [],
-    numeroAmigos: ""
+    numeroAmigos: "",
+    dineroEvento: ""
   }
   componentDidMount(){
     const {email} = auth().currentUser
@@ -32,7 +33,7 @@ class PantallaAmigosPendientes extends React.Component {
       console.log('  usuario existe: ', documentSnapshot.exists)
       if(documentSnapshot.exists){
         console.log('  datos usuario:  ', documentSnapshot.data())
-        const datosPeticiones = documentSnapshot.get('peticiones')
+        const datosPeticiones = documentSnapshot.get('peticionEventos')
         if(datosPeticiones==undefined){
           console.log('  datosPeticiones:', false)
           console.log('  no hay peticiones')
@@ -58,89 +59,105 @@ class PantallaAmigosPendientes extends React.Component {
     })
   } */
   handleAceptarAmistad = (peticion) => {
-    firestore().collection('usuarios').doc(peticion).get().then(documentSnapshot => {
-      console.log('  usuario existe: ', documentSnapshot.exists)
-      if(documentSnapshot.exists){
-        console.log('  datos usuario:  ', documentSnapshot.data())
-        const datosAmigos = documentSnapshot.get('amigos')
-        if(datosAmigos==undefined){
-          console.log('  datosAmigos:', false)
-          //añadir peticiones y añadir el primer email
-          firestore().collection('usuarios').doc(peticion).update({amigos: {1: peticion}})
-          .then(() => {
-            console.log('usuario añadido a amigos!');
-          });
-        }else{
-          console.log('  datosAmigos:', true)
-          //añadir un email a peticiones que ya está creado y comprobar si ya está incluido
-          var amigosRepetidos = false
-          Object.values(datosAmigos).map((amigo) => {
-            if(amigo == peticion){
-              amigosRepetidos = true
-            }
-          })
-          if(!amigosRepetidos){
-            console.log('  datosAmigos dato1: ',Object.values(datosAmigos)[0])
-            console.log('  amigos: ', Object.keys(datosAmigos).length)
-            console.log('peticion1111111',peticion)
-            this.setState({numeroAmigos: Object.keys(datosAmigos).length+1})
-            const nuevoAmigo = {...datosAmigos, [Object.keys(datosAmigos).length+1]: peticion}
-            console.log(nuevoAmigo)
-            firestore().collection('usuarios').doc(peticion).update({amigos: nuevoAmigo})
-            .then(() => {
-              console.log('usuario añadido a amigos!');
-            })
-          }else {
-            console.log('ya esta ese usuario')
-          }
-        }
+    //Cambiar de pendiente a confirmado el pago
+    var idEvento = ""
+    var nombreEvento = ""
+    var emailAdminEvento = ""
+    var dineroPeticion = ""
+    console.log(peticion)
+    Object.entries(peticion).map((valor) => {
+      if(valor[0] == 'nombreEvento'){
+        idEvento = valor[1]
+        emailAdminEvento = valor[1].substring(valor[1].indexOf("_")+1)
+        nombreEvento = valor[1].substring(0,valor[1].indexOf("_"))
+      }
+      if(valor[0] == 'dinero'){
+        dineroPeticion = valor[1]
       }
     })
-    /* this.forceUpdate()
-    this.setState({state: this.state}) */
-  }
-
-  handleEliminarPeticion = (peticion) => {
-    firestore().collection('usuarios').doc(this.state.email).get().then(documentSnapshot => {
-      console.log('  usuario existe: ', documentSnapshot.exists)
-      if(documentSnapshot.exists){
-        console.log('  datos usuario:  ', documentSnapshot.data())
-        const datosPeticiones = documentSnapshot.get('peticiones')
-        const numeroPeticiones = Object.values(datosPeticiones).length
-        console.log(numeroPeticiones)
-        for (const [key, value] of Object.entries(datosPeticiones)) {
-          if(value == peticion){
-            this.setState({idAmigoAnadir: key})
+    console.log(idEvento)
+    console.log(nombreEvento)
+    console.log(dineroPeticion)
+    console.log(emailAdminEvento)
+    firestore().collection('eventos').where('emailAdmin','==',emailAdminEvento).where('nombreEvento','==',nombreEvento).get().then(querySnapshot => {
+      /* console.log(querySnapshot.size) */
+      querySnapshot.forEach(documentSnapshot => {
+        const evento = documentSnapshot.data()
+        /* console.log(evento)
+        console.log(evento['noConfirmados'])
+        console.log(evento['confirmados']) */
+        var nuevoNoConfirmados = evento['noConfirmados'] 
+        for (const [key, value] of Object.entries(nuevoNoConfirmados)) {
+          if(value == this.state.email){
+            console.log('value'+value)
+            console.log('key'+key)
+            delete nuevoNoConfirmados[key]
           }
           console.log(key+':'+value);
         }
-        delete datosPeticiones[this.state.idAmigoAnadir]
-        console.log('datosPETICIONES',datosPeticiones)
-        firestore().collection('usuarios').doc(this.state.email).update({peticiones: datosPeticiones})
-        if(numeroPeticiones == 1){
-          firestore().collection('usuarios').doc(this.state.email).update({peticiones: firestore.FieldValue.delete()})
-          this.setState({hayPeticiones: false})
+        if(evento['confirmados'] == undefined){
+          firestore().collection('eventos').doc(idEvento).update({confirmados: {[Math.floor(Math.random() * 10000) + 1]: this.state.email}})
+          firestore().collection('eventos').doc(idEvento).get().then((documentSnapshot) => {
+            console.log('dinero',documentSnapshot.get('dinero'))
+            firestore().collection('eventos').doc(idEvento).update({dinero: documentSnapshot.get('dinero')+parseInt(dineroPeticion)})
+          })
+        }else{
+          firestore().collection('eventos').doc(idEvento).update({confirmados: {...evento['confirmados'],[Math.floor(Math.random() * 10000) + 1]: this.state.email} })
+          
+          var dieroAntesDeConfirmarPeticion = ""
+          firestore().collection('eventos').doc(idEvento).get().then((documentSnapshot) => {
+            console.log('dinero',documentSnapshot.get('dinero'))
+            firestore().collection('eventos').doc(idEvento).update({dinero: documentSnapshot.get('dinero')+parseInt(dineroPeticion)})
+          })
+          console.log(dieroAntesDeConfirmarPeticion)
         }
-        this.setState({datosPeticiones: datosPeticiones})
-      }
+
+        firestore().collection('eventos').doc(idEvento).update({noConfirmados: nuevoNoConfirmados})
+        if(Object.values(nuevoNoConfirmados).length == 0){
+          firestore().collection('eventos').doc(idEvento).update({noConfirmados: firestore.FieldValue.delete()})
+          firestore().collection('eventos').doc(idEvento).update({eventoActivo: true})
+        }
+      })
     })
+  }
+  handleEliminarPeticion = (peticion) => {
+    const datosPeticiones = this.state.datosPeticiones
+    console.log('datosPETICIONES1',this.state.datosPeticiones)
+    console.log('datosPETICIONES2',datosPeticiones)
+    const numeroPeticiones = Object.values(datosPeticiones).length
+    let idAmigoEliminar= ""
+    console.log(Object.values(this.state.datosPeticiones).length)
+    for (const [key, value] of Object.entries(this.state.datosPeticiones)) {
+      if(value['nombreEvento'] == peticion['nombreEvento']){
+        console.log('value'+value)
+        console.log('key'+key)
+        idAmigoEliminar = key
+      }
+      console.log(key+':'+value);
+    }
+    console.log('datosPETICIONES3',idAmigoEliminar)
+    delete datosPeticiones[idAmigoEliminar]
+    console.log('datosPETICIONES4',datosPeticiones)
+    this.setState({datosPeticiones: datosPeticiones})
+    firestore().collection('usuarios').doc(this.state.email).update({peticionEventos: datosPeticiones})
+    if(numeroPeticiones == 1){
+      firestore().collection('usuarios').doc(this.state.email).update({peticionEventos: firestore.FieldValue.delete()})
+      this.setState({hayPeticiones: false})
+    }
     
-    /* this.render()
-    this.forceUpdate()
-    this.setState({state: this.state}) */
   }
   
   render(){
     const navigation = this.context;
     const listaPeticiones = Object.values(this.state.datosPeticiones).map((peticion) => {
       return(
-        <View key={peticion} style={{flex: 1}}>
+        <View key={peticion['nombreEvento']} style={{flex: 1}}>
           <View style={{height: 50, flexDirection: 'row'}}>
             <View style={{width:50,height: 50}}>
-              <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_persona.png')}></Image>
+              <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_eventosnoadmin.png')}></Image>
             </View>
             <View style={{height: 50,width: '80%', flexDirection: 'column'}}>
-              <Text style={{textAlign: 'center', fontWeight: 'bold',fontSize: 18,marginTop: 0, justifyContent: 'center' }}>{peticion}</Text>
+              <Text style={{textAlign: 'center', fontWeight: 'bold',fontSize: 18,marginTop: 0, justifyContent: 'center' }}>{peticion['nombreEvento']}</Text>
               <View style={{height: 50, flexDirection: 'row', justifyContent: 'center'}}>
                 <TouchableOpacity style={{
                     alignItems: 'center', 
@@ -160,29 +177,34 @@ class PantallaAmigosPendientes extends React.Component {
                 </TouchableOpacity>
                 <Text>     </Text>
                 <TouchableOpacity style={{
-                  alignItems: 'center', 
-                  backgroundColor: '#535473', 
-                  width: 80, 
-                  height: 20, 
-                  justifyContent: 'center', 
-                  borderRadius: 5, 
-                  borderColor: 'white'}} onPress={() => {
-                  this.handleEliminarPeticion(peticion)
-                }}>
+                    alignItems: 'center', 
+                    backgroundColor: '#535473', 
+                    width: 80, 
+                    height: 20, 
+                    justifyContent: 'center', 
+                    borderRadius: 5, 
+                    borderColor: 'white'
+                  }} 
+                  onPress={() => {
+                    this.handleEliminarPeticion(peticion)
+                  }}
+                >
                   <Text style={{ color: "#FFF", fontWeight: "500" }}>Cancelar</Text>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
+          
+          
         </View>
       )
     })
     return (
       <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/background1.png')}>
         <View style={styles.container}>
-          <View style={{flex: 0.4}}>
+          <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
             <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
-              <View style={{width: '20%'}}>
+              <View style={{width: '20%'/*, backgroundColor: 'pink'*/}}>
                 <TouchableOpacity
                   style={{alignItems: "center",justifyContent: "center"}}
                   onPress={() => navigation.navigate('PantallaPrincipal')}
@@ -191,15 +213,25 @@ class PantallaAmigosPendientes extends React.Component {
                     <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_grande.png')} />
                 </TouchableOpacity>
               </View>
-              <View style={{width: '80%'}}>
+              <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
                 <Image style={{width: 120, height: 50, marginHorizontal: 52, marginTop: 10}}  source={require('../imagenes/fuente.png')} />
               </View>
             </View>
           </View>
           <View style={{flex: 4}}>
             <View style={{flexDirection: 'row', width: '100%', height: '100%'}}>
-              {this.state.hayPeticiones 
-                ? <View style={{flex: 4, left: 20}}>
+              <View style={{flex: 0.5, /*backgroundColor: 'green',*/ justifyContent: 'center'}}>
+                <TouchableOpacity
+                  style={{alignItems: "center",justifyContent: "center"}}
+                  onPress={() => navigation.goBack()}
+                  background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                >
+                  <Image style={{width: 50, height: 350}} source={require('../imagenes/logo_flechaizda.png')} />
+                </TouchableOpacity>
+              </View>
+              {this.state.hayPeticiones
+                ? 
+                  <View style={{flex: 4, left: 20}}>
                     <Text style={{textTransform: 'uppercase', fontSize: 20, fontWeight: 'bold', color: '#535473'}}>Peticiones</Text>
                     <View style={{flex: 1,flexDirection: 'column', justifyContent: 'flex-start', marginTop: 20}}>
                       {listaPeticiones}
@@ -214,22 +246,11 @@ class PantallaAmigosPendientes extends React.Component {
                     </View>
                   </View>
               }
-              
-              <View style={{flex: 0.5, justifyContent: 'center'}}>
-                <TouchableOpacity
-                  style={{alignItems: "center",justifyContent: "center"}}
-                  onPress={() => navigation.goBack()}
-                  background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
-                >
-                  <Image style={{width: 50, height: 350}} source={require('../imagenes/logo_flechadcha.png')} />
-                </TouchableOpacity>
-              </View>
             </View>
           </View>
         </View>
       </ImageBackground>
     )
-    
   }
 }
 
@@ -282,4 +303,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default PantallaAmigosPendientes
+export default PantallaPeticionesEventos

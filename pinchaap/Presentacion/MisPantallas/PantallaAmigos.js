@@ -50,6 +50,12 @@ class PantallaAmigos extends React.Component {
       }
     })
   }
+  /* componentWillUnmount(){
+    auth().signOut().then(() => console.log('User signed out!'));
+    firestore().collection('usuarios').doc(this.state.email).get().then(documentSnapshot => {
+      firestore().collection('usuarios').doc(this.state.email).update({conectado: false}).then(console.log('User updated!'))
+    })
+  } */
   
   render(){
     const navigation = this.context;
@@ -59,7 +65,7 @@ class PantallaAmigos extends React.Component {
         return(
           <View key={amigo} style={{/* backgroundColor: 'red',  */flex: 1, height: 50, flexDirection: 'row'}}>
             <View style={{/* backgroundColor: 'red', */ width:50,height: 50}}>
-              <Image style={{width: 50, height: 50}} source={require('../imagenes/amigo.png')}></Image>
+              <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_persona.png')}></Image>
             </View>
             <View style={{/* backgroundColor: 'pink', */ height: 50,width: '80%', flexDirection: 'column'}}>
               <Text style={{textAlign: 'center', fontWeight: 'bold',fontSize: 18,marginTop: 0, justifyContent: 'center' }}>{amigo}</Text>
@@ -69,7 +75,7 @@ class PantallaAmigos extends React.Component {
         
       })
       return (
-        <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/backgroundsecundarias.png')}>
+        <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/background1.png')}>
           <View style={styles.container}>
             <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
               <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
@@ -83,7 +89,7 @@ class PantallaAmigos extends React.Component {
                   </TouchableOpacity>
                 </View>
                 <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
-                  <Text style={{marginHorizontal: 85}}>Pinchapp</Text>
+                  <Image style={{width: 120, height: 50, marginHorizontal: 52, marginTop: 10}}  source={require('../imagenes/fuente.png')} />
                 </View>
               </View>
             </View>
@@ -100,7 +106,7 @@ class PantallaAmigos extends React.Component {
       )
     }else{
       return (
-        <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/backgroundsecundarias.png')}>
+        <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/background1.png')}>
           <View style={styles.container}>
             <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
               <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
@@ -114,7 +120,7 @@ class PantallaAmigos extends React.Component {
                   </TouchableOpacity>
                 </View>
                 <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
-                  <Text style={{marginHorizontal: 85}}>Pinchapp</Text>
+                  <Image style={{width: 120, height: 50, marginHorizontal: 52, marginTop: 10}}  source={require('../imagenes/fuente.png')} />
                 </View>
               </View>
             </View>

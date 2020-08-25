@@ -1,5 +1,5 @@
 import React from 'react'
-import {View, TouchableOpacity, TouchableNativeFeedback, Image, Text, StyleSheet, TextInput} from 'react-native'
+import {View, TouchableOpacity, TouchableNativeFeedback, Image, Text, StyleSheet, TextInput, ImageBackground} from 'react-native'
 import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
 import { NavigationContext } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
@@ -22,6 +22,12 @@ class PantallaCreandoEvento extends React.Component {
       this.setState({nombre: documentSnapshot.get('nombre')})
     })
   }
+  /* componentWillUnmount(){
+    auth().signOut().then(() => console.log('User signed out!'));
+    firestore().collection('usuarios').doc(this.state.email).get().then(documentSnapshot => {
+      firestore().collection('usuarios').doc(this.state.email).update({conectado: false}).then(console.log('User updated!'))
+    })
+  } */
   /* handleNombreDinero = () => {
     
     console.log('Añadir comensales')
@@ -39,11 +45,11 @@ class PantallaCreandoEvento extends React.Component {
       console.log(' email: ', this.state.email)
       console.log('  nombre Evento:   ' + this.state.nombreEvento)
       console.log('  dinero por persona:   ' + this.state.dineroPorPersona)
-      firestore().collection('usuarios').doc(this.state.email).update({datosEventoNoCreado: {nombre: this.state.nombreEvento,dinero: this.state.dineroPorPersona}})
+      firestore().collection('usuarios').doc(this.state.email).update({datosEventoNoCreado: {nombreEvento: this.state.nombreEvento,dinero: this.state.dineroPorPersona}})
       .then(() => {
         console.log('nombre y dinero añadidos al usuario admin!');
       });
-      navigation.navigate('AnadirPersona')
+      navigation.navigate('AnadirPersona',{nombreEvento: this.state.nombreEvento,dinero: this.state.dineroPorPersona})
     };
     const elimarEIrAEventosPrincipal = () => {
       firestore().collection('usuarios').doc(this.state.email).update({datosEventoNoCreado: firestore.FieldValue.delete()})
@@ -54,58 +60,85 @@ class PantallaCreandoEvento extends React.Component {
       navigation.navigate('PantallaPrincipal')
     }
     return (
-      <View style={{ flex: 1}}>
-        <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
-          <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
-            <View style={{width: '20%'/*, backgroundColor: 'pink'*/}}>
-              <TouchableOpacity
-                style={{alignItems: "center",justifyContent: "center"}}
-                onPress={elimarEIrAPantallaPrincipal}
-                background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
-              >
-                  <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_grande.png')} />
+      <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/background1.png')}>
+        <View style={{ flex: 1}}>
+          <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
+            <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
+              <View style={{width: '20%'/*, backgroundColor: 'pink'*/}}>
+                <TouchableOpacity
+                  style={{alignItems: "center",justifyContent: "center"}}
+                  onPress={elimarEIrAPantallaPrincipal}
+                  background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                >
+                    <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_grande.png')} />
+                </TouchableOpacity>
+              </View>
+              <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
+                <Image style={{width: 120, height: 50, marginHorizontal: 52, marginTop: 10}}  source={require('../imagenes/fuente.png')} />
+              </View>
+            </View>
+          </View>
+          <View style={{flex: 4, left: 20}}>
+            <View style={{flex: 2}}>
+              <View style={{flex:1}}></View>
+              <View style={{flex: 1}}>
+                <Text style={{textTransform: "uppercase", fontSize: 12}}>Nombre evento</Text>
+                <TextInput 
+                  style={{borderBottomColor: "#8A8F9E",borderBottomWidth: StyleSheet.hairlineWidth,
+                  borderTopColor: "#8A8F9E",borderTopWidth: StyleSheet.hairlineWidth,
+                  borderLeftColor: "#8A8F9E",borderLeftWidth: StyleSheet.hairlineWidth,
+                  borderRightColor: "#8A8F9E",borderRightWidth: StyleSheet.hairlineWidth, height:35, marginTop: 20, borderRadius: 5, width: 320}} 
+                  autoCapitalize="none" 
+                  onChangeText={nombreEvento => this.setState({ nombreEvento })}
+                  value={this.state.nombreEvento}
+                ></TextInput>
+              </View>
+              <View style={{flex: 1}}>
+                <Text style={{textTransform: "uppercase", fontSize: 12}}>Dinero</Text>
+                <TextInput 
+                  style={{borderBottomColor: "#8A8F9E",borderBottomWidth: StyleSheet.hairlineWidth,
+                  borderTopColor: "#8A8F9E",borderTopWidth: StyleSheet.hairlineWidth,
+                  borderLeftColor: "#8A8F9E",borderLeftWidth: StyleSheet.hairlineWidth,
+                  borderRightColor: "#8A8F9E",borderRightWidth: StyleSheet.hairlineWidth, height:35, marginTop: 20, borderRadius: 5, width: 320}} 
+                  autoCapitalize="none"  
+                  keyboardType= 'numeric'
+                  onChangeText={dineroPorPersona => this.setState({ dineroPorPersona })}
+                  value={this.state.dineroPorPersona}
+                ></TextInput>
+              </View>
+            </View>
+            <View style={{flex: 1, marginTop: 50}}>
+              <TouchableOpacity style={{
+                alignItems: 'center', 
+                backgroundColor: '#535473', 
+                width: 320, 
+                height: 30,
+                justifyContent: 'center', 
+                borderRadius: 5, 
+                borderColor: 'white', 
+                marginTop: 20}} onPress={
+                handleNombreDinero}>
+                <Text style={{ color: "#FFF", fontWeight: "500" }}>Añadir comensales</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{
+                alignItems: 'center', 
+                backgroundColor: '#535473', 
+                width: 320, 
+                height: 30, 
+                justifyContent: 'center', 
+                borderRadius: 5, 
+                borderColor: 'white',
+                marginTop: 20}} onPress={elimarEIrAEventosPrincipal} >
+                <Text style={{ color: "#FFF", fontWeight: "500" }}>Cancelar</Text>
               </TouchableOpacity>
             </View>
-            <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
-              <Text style={{marginHorizontal: 85}}>Pinchapp</Text>
+            <View style={{flex: 1}}>
+              
             </View>
           </View>
+          
         </View>
-        <View style={{flex: 4, left: 20}}>
-          <View>
-            <Text style={styles.inputTitle}>Nombre evento</Text>
-            <TextInput 
-              style={styles.input} 
-              autoCapitalize="none" 
-              onChangeText={nombreEvento => this.setState({ nombreEvento })}
-              value={this.state.nombreEvento}
-            ></TextInput>
-          </View>
-          <View>
-            <Text style={styles.inputTitle}>Dinero</Text>
-            <TextInput 
-              style={styles.input} 
-              autoCapitalize="none" 
-              keyboardType= 'numeric'
-              onChangeText={dineroPorPersona => this.setState({ dineroPorPersona })}
-              value={this.state.dineroPorPersona}
-            ></TextInput>
-          </View>
-          <View>
-            <TouchableOpacity style={styles.button} onPress={
-              handleNombreDinero
-              /* navigation.navigate('AnadirPersona') */}>
-              <Text style={{ color: "#FFF", fontWeight: "500" }}>Añadir comensales</Text>
-            </TouchableOpacity>
-          </View>
-          <View>
-            <TouchableOpacity style={styles.button} onPress={elimarEIrAEventosPrincipal} >
-              <Text style={{ color: "#FFF", fontWeight: "500" }}>Cancelar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        
-      </View>
+      </ImageBackground>
     )
   }
 }

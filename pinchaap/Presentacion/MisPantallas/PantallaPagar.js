@@ -5,21 +5,27 @@ import { NavigationContext } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
-class PantallaEventosPrincipal extends React.Component {
+class PantallaPagar extends React.Component {
   static contextType = NavigationContext;
   state = {
+    idEvento: "",
     email: "",
-    nombre: ""
+    dinero: "",
+    datosConfirmados: {},
+    admin: false,
+    nombreEvento: ""
   }
   componentDidMount(){
     const {email} = auth().currentUser
-
     this.setState({email})
-    firestore().collection('usuarios').doc(email).get().then(documentSnapshot => {
-      console.log(documentSnapshot.get('nombre'))
-      this.setState({nombre: documentSnapshot.get('nombre')})
+    const idEvento = this.props.route.params.idEvento
+    this.setState({idEvento: idEvento})
+    firestore().collection('eventos').doc(idEvento).get().then(documentSnapshot => {
+      this.setState({dinero: documentSnapshot.get('dinero')})
+      this.setState({datosConfirmados: documentSnapshot.get('confirmados')})
+      this.setState({nombreEvento: documentSnapshot.get('nombreEvento')})
     })
-    console.log('ajdfklsñdaslfjadñslfkjadsñlfjasñldfjasldjflasdkjfñlasf',this.props.route.params.email)
+    this.setState({admin: this.props.route.params.admin})
   }
   /* componentWillUnmount(){
     auth().signOut().then(() => console.log('User signed out!'));
@@ -29,6 +35,14 @@ class PantallaEventosPrincipal extends React.Component {
   } */
   render(){
     const navigation = this.context;
+    const salirDeEvento = () => {
+      this.handleEliminarComensal()
+      navigation.navigate('EventosActivos')
+    }
+    const eliminarEvento = () => {
+      this.handleEliminarEvento()
+      navigation.navigate('EventosActivos')
+    }
     return (
       <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/background1.png')}>
         <View style={styles.container}>
@@ -49,56 +63,50 @@ class PantallaEventosPrincipal extends React.Component {
             </View>
           </View>
           <View style={{flex: 4}}>
-            <View style={{flex: 1}} >
-
-              <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', /*backgroundColor: 'red',*/ width: '100%', height: '120%'}}>
-
-
-
-                <View style={{/*backgroundColor: 'green',*/ flexDirection: 'column',width:"50%"}}>
-                  <View /*style={{backgroundColor: 'pink'}}*/>
-                    <TouchableOpacity
-                      style={{alignItems: "center",justifyContent: "center"}}
-                      onPress={() => navigation.navigate('CreandoEvento')}
-                      background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
-                    >
-                        <Image style={{width: 120, height: 120}} source={require('../imagenes/logo_crear.png')} />
-                    </TouchableOpacity>
-                  </View>
-                  <Text style={{textAlign: 'center'}}>Crear</Text>
-                </View>
-
-
-
+            <View style={{flex: 8}}>
+              <View style={{flex: 1}}>
+                <Text 
+                  style={{marginLeft: 10, 
+                    color: '#000', 
+                    fontSize: 20, 
+                    textTransform: 'uppercase', 
+                    marginTop: 10,
+                    backgroundColor: '#979BD6', 
+                    marginRight: 10, 
+                    borderRadius: 5, 
+                    color: '#000', 
+                    opacity: 0.6
+                  }}
+                >{this.state.nombreEvento}</Text>
               </View>
-            </View>
-
-            <View style={{flex: 1}}>
-              <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', /*backgroundColor: 'red', */width: '100%', height: '70%'}}>
-
-
-
-                
-
-                <View style={{/*backgroundColor: 'green', */flexDirection: 'column',width:"50%"}}>
-                  <View /*style={{backgroundColor: 'pink'}}*/>
-                    <TouchableOpacity
-                      style={{alignItems: "center",justifyContent: "center"}}
-                      onPress={() => navigation.navigate('EventosActivos')}
-                      background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
-                    >
-                        <Image style={{width: 120, height: 120}} source={require('../imagenes/logo_activos.png')} />
-                    </TouchableOpacity>
-                  </View>
-                  <Text style={{textAlign: 'center'}}>Eventos activos</Text>
+              <View style={{flex: 3}}>
+                <View 
+                  style={{flex: 1, 
+                  backgroundColor: '#979BD6',
+                  borderRadius: 200,
+                  marginLeft:'10%', 
+                  marginRight:'10%',
+                  justifyContent: 'center', 
+                  opacity: 0.8}}
+                >
+                  <Text style={{textAlign: 'center', color: '#535473', fontSize: 60}}>{this.state.dinero}€</Text>
                 </View>
-
-
-                
               </View>
+                <View style={{flex: 1, alignItems: 'center', marginTop: 5}}>
+                  <TouchableOpacity style={{
+                    alignItems: 'center', 
+                    backgroundColor: '#535473', 
+                    width: 180, 
+                    height: 50, 
+                    justifyContent: 'center', 
+                    borderRadius: 5, 
+                    borderColor: 'white', 
+                    marginTop: 20}} onPress={() => navigation.goBack()}>
+                    <Text style={{ color: "#FFF", fontWeight: "500" }}>Atras</Text>
+                  </TouchableOpacity>
+                </View>
             </View>
           </View>
-          
         </View>
       </ImageBackground>
     )
@@ -154,4 +162,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default PantallaEventosPrincipal
+export default PantallaPagar

@@ -41,34 +41,43 @@ class PantallaRegistro extends React.Component {
   render(){
     const navigation = this.context;
     return (
-      <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/background.png')}>
-        <View style={{ flex: 1}}>
-          <View style={styles.errorMessage}>
+      <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/backgroundinicio.png')}>
+        <View style={{ flex: 7}}>
+          <View style={{flex: 1,height: 72,alignItems: "center",justifyContent: "center",marginHorizontal: 30}}>
             {this.state.errorMessage && <Text style={styles.error}>{ this.state.errorMessage }</Text>}
           </View>
-          <View style={styles.form}>
-            <View style={{ marginTop: 32 }}>
-              <Text style={styles.inputTitle}>Nombre</Text>
+          <View style={{flex: 4}}>
+            <View style={{marginLeft: 30, marginRight: 30}}>
+              <Text style={{textTransform: "uppercase", fontSize: 12}}>Nombre</Text>
               <TextInput 
-                style={styles.input}
+                style={{borderBottomColor: "#8A8F9E",borderBottomWidth: StyleSheet.hairlineWidth,
+                borderTopColor: "#8A8F9E",borderTopWidth: StyleSheet.hairlineWidth,
+                borderLeftColor: "#8A8F9E",borderLeftWidth: StyleSheet.hairlineWidth,
+                borderRightColor: "#8A8F9E",borderRightWidth: StyleSheet.hairlineWidth, height:35, marginTop: 20, borderRadius: 5}}
                 autoCapitalize="none"
                 onChangeText={nombre => this.setState({ nombre })}  
                 value={this.state.nombre}
               ></TextInput>
             </View>
-            <View>
-              <Text style={styles.inputTitle}>Dirección email</Text>
+            <View style={{marginLeft: 30, marginRight: 30, marginTop: 32}}>
+              <Text style={{textTransform: "uppercase", fontSize: 12}}>Dirección email</Text>
               <TextInput 
-                style={styles.input} 
+                style={{borderBottomColor: "#8A8F9E",borderBottomWidth: StyleSheet.hairlineWidth,
+                borderTopColor: "#8A8F9E",borderTopWidth: StyleSheet.hairlineWidth,
+                borderLeftColor: "#8A8F9E",borderLeftWidth: StyleSheet.hairlineWidth,
+                borderRightColor: "#8A8F9E",borderRightWidth: StyleSheet.hairlineWidth, height:35, marginTop: 20, borderRadius: 5}} 
                 autoCapitalize="none" 
                 onChangeText={email => this.setState({ email })}
                 value={this.state.email}
               ></TextInput>
             </View>
-            <View style={{ marginTop: 32 }}>
-              <Text style={styles.inputTitle}>Contraseña</Text>
+            <View style={{marginLeft: 30, marginRight: 30, marginTop: 32}}>
+              <Text style={{textTransform: "uppercase", fontSize: 12}}>Contraseña</Text>
               <TextInput 
-                style={styles.input} 
+                style={{borderBottomColor: "#8A8F9E",borderBottomWidth: StyleSheet.hairlineWidth,
+                borderTopColor: "#8A8F9E",borderTopWidth: StyleSheet.hairlineWidth,
+                borderLeftColor: "#8A8F9E",borderLeftWidth: StyleSheet.hairlineWidth,
+                borderRightColor: "#8A8F9E",borderRightWidth: StyleSheet.hairlineWidth, height:35, marginTop: 20, borderRadius: 5}} 
                 secureTextEntry 
                 autoCapitalize="none"
                 onChangeText={contrasena => this.setState({ contrasena })}  
@@ -76,12 +85,15 @@ class PantallaRegistro extends React.Component {
               ></TextInput>
             </View>
           </View>
-          <TouchableOpacity style={styles.button} onPress={this.createUser/*() => navigation.navigate('PantallaPrincipal')*/}>
-            <Text style={{ color: "#FFF", fontWeight: "500" }}>Registrarse</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{ alignSelf: "center", marginTop: 32 }} onPress={/*this.handleLogin*/() => navigation.goBack()}>
-            <Text style={{ fontWeight: "500", color:"#E9446A"}}>atras</Text>
-          </TouchableOpacity>
+          <View style={{flex: 2, alignItems: 'center'}}>
+            <TouchableOpacity style={{alignItems: 'center', backgroundColor: '#535473', width: 320, height: 30, justifyContent: 'center', borderRadius: 5, borderColor: 'white'}} onPress={this.createUser/*() => navigation.navigate('PantallaPrincipal')*/}>
+              <Text style={{ color: "#FFF", fontWeight: "500" }}>Registrarse</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{alignItems: 'center', backgroundColor: '#979BD6', width: 320, height: 30, justifyContent: 'center', borderRadius: 5, borderColor: 'white', marginTop: 20}} onPress={/*this.handleLogin*/() => navigation.goBack()}>
+              <Text style={{ color: "#FFF", fontWeight: "500" }}>Atras</Text>
+            </TouchableOpacity>
+          </View>
+          
         </View>
       </ImageBackground>
     )
@@ -99,10 +111,7 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   errorMessage: {
-    height: 72,
-    alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: 30
+    
   },
   error: {
     color: "#E9446A",

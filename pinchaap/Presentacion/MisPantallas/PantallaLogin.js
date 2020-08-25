@@ -43,26 +43,34 @@ class PantallaLogin extends React.Component {
   }
   render(){
     return (
-      <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/background.png')}>
-        <View style={styles.container}>
-          <Text style={styles.greeting}>{'Hola de nuevo. \nBienvenido.'}</Text>
-          <View style={styles.errorMessage}>
+      <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/backgroundinicio.png')}>
+        <View style={{flex: 7}}>
+          <View style={{color: '#000',flex:1, textTransform: "uppercase"/* , backgroundColor: 'green' */,justifyContent: 'flex-end'}}>
+            <Text  style={{textAlign: 'center', fontSize: 18}}>{'Bienvenido. \n¡¡Vámonos de pinchos!!'}</Text>
+          </View>
+          <View style={{flex: 1,height: 60,alignItems: "center",justifyContent: "center",marginHorizontal: 30/* ,backgroundColor: 'yellow' */}}>
             {this.state.errorMessage && <Text style={styles.error}>{ this.state.errorMessage }</Text>}
           </View>
-          <View style={styles.form}>
-            <View>
-              <Text style={styles.inputTitle}>Dirección email</Text>
+          <View style={{flex: 3/* , backgroundColor: 'red' */}}>
+            <View style={{marginLeft: 30, marginRight: 30}}>
+              <Text style={{textTransform: "uppercase", fontSize: 12}}>cuenta gmail</Text>
               <TextInput 
-                style={styles.input} 
+                style={{borderBottomColor: "#8A8F9E",borderBottomWidth: StyleSheet.hairlineWidth,
+                borderTopColor: "#8A8F9E",borderTopWidth: StyleSheet.hairlineWidth,
+                borderLeftColor: "#8A8F9E",borderLeftWidth: StyleSheet.hairlineWidth,
+                borderRightColor: "#8A8F9E",borderRightWidth: StyleSheet.hairlineWidth, height:35, marginTop: 20, borderRadius: 5}} 
                 autoCapitalize="none" 
                 onChangeText={email => this.setState({ email })}
                 value={this.state.email}
               ></TextInput>
             </View>
-            <View style={{ marginTop: 32 }}>
-              <Text style={styles.inputTitle}>Contraseña</Text>
+            <View style={{marginLeft: 30, marginRight: 30, marginTop: 32}}>
+              <Text style={{textTransform: "uppercase", fontSize: 12}}>contraseña</Text>
               <TextInput 
-                style={styles.input} 
+                style={{borderBottomColor: "#8A8F9E",borderBottomWidth: StyleSheet.hairlineWidth,
+                borderTopColor: "#8A8F9E",borderTopWidth: StyleSheet.hairlineWidth,
+                borderLeftColor: "#8A8F9E",borderLeftWidth: StyleSheet.hairlineWidth,
+                borderRightColor: "#8A8F9E",borderRightWidth: StyleSheet.hairlineWidth, height:35, marginTop: 20, borderRadius: 5}} 
                 secureTextEntry 
                 autoCapitalize="none"
                 onChangeText={contrasena => this.setState({ contrasena })}  
@@ -70,14 +78,17 @@ class PantallaLogin extends React.Component {
               ></TextInput>
             </View>
           </View>
-          <TouchableOpacity style={styles.button} onPress={this.handleLogin/*() => RootNavigation.navigate('PantallaPrincipal')*/}>
-            <Text style={{ color: "#FFF", fontWeight: "500" }}>Registrarse</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{ alignSelf: "center", marginTop: 32 }} onPress={/*this.logoff*/() => RootNavigation.navigate('Registro')}>
-            <Text style={{color: "#414959", fontSize: 13}}>
-              ¿Nuevo en Pinchaap? <Text style={{ fontWeight: "500", color:"#E9446A"}}>registrate</Text>
-            </Text>
-          </TouchableOpacity>
+          <View style={{flex: 2, alignItems: 'center'}}>
+            <TouchableOpacity style={{alignItems: 'center', backgroundColor: '#535473', width: 320, height: 30, justifyContent: 'center', borderRadius: 5, borderColor: 'white'}} onPress={this.handleLogin/*() => RootNavigation.navigate('PantallaPrincipal')*/}>
+              <Text style={{ color: "#FFF" , fontWeight: "500" }}>Inicio</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{ alignSelf: "center", marginTop: 32}} onPress={/*this.logoff*/() => RootNavigation.navigate('Registro')}>
+              <Text style={{color: "#414959", fontSize: 13}}>
+                ¿Nuevo en Pinchaap? <Text style={{ fontWeight: "500", color:"#8D82D6"}}>Regístrate</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+          
         </View>
       </ImageBackground>
     )
@@ -89,16 +100,14 @@ const styles = StyleSheet.create({
     flex: 1
   },
   greeting: {
+    color: '#000',
     marginTop: 32,
     fontSize: 18,
     fontWeight: "400",
     textAlign: "center"
   },
   errorMessage: {
-    height: 72,
-    alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: 30
+    
   },
   error: {
     color: "#E9446A",

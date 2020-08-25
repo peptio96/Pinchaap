@@ -20,6 +20,12 @@ class PantallaPantallaPrincipal extends React.Component {
       this.setState({nombre: documentSnapshot.get('nombre')})
     })
   }
+  /* componentWillUnmount(){
+    auth().signOut().then(() => console.log('User signed out!'));
+    firestore().collection('usuarios').doc(this.state.email).get().then(documentSnapshot => {
+      firestore().collection('usuarios').doc(this.state.email).update({conectado: false}).then(console.log('User updated!'))
+    })
+  } */
   render(){
     const navigation = this.context;
     const signOutUser = () => {
@@ -30,7 +36,7 @@ class PantallaPantallaPrincipal extends React.Component {
       navigation.navigate('Logging')
     };
     return (
-      <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/backgroundinicio.png')}>
+      <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/background.png')}>
         <View style={styles.container}>
           <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
             <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
@@ -44,7 +50,8 @@ class PantallaPantallaPrincipal extends React.Component {
                 </TouchableOpacity>
               </View>
               <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
-                <Text style={{marginHorizontal: 85}}>Pinchapp</Text>
+                {/* <Text style={{marginHorizontal: 85}}>Pinchapp</Text> */}
+                <Image style={{width: 120, height: 50, marginHorizontal: 52, marginTop: 10}}  source={require('../imagenes/fuente.png')} />
               </View>
             </View>
             
@@ -60,7 +67,7 @@ class PantallaPantallaPrincipal extends React.Component {
                   <View /*style={{backgroundColor: 'pink'}}*/>
                     <TouchableOpacity
                       style={{alignItems: "center",justifyContent: "center"}}
-                      onPress={() => navigation.navigate('EventosPrincipal')}
+                      onPress={() => navigation.navigate('EventosPrincipal',{email: this.state.email})}
                       background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
                     >
                         <Image style={{width: 120, height: 120}} source={require('../imagenes/logo_eventos.png')} />

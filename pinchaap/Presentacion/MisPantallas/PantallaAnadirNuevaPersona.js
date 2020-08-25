@@ -5,7 +5,7 @@ import { NavigationContext } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
-class PantallaAnadirPersona extends React.Component {
+class PantallaAnadirNuevaPersona extends React.Component {
   static contextType = NavigationContext;
   state = {
     email: "",
@@ -15,24 +15,23 @@ class PantallaAnadirPersona extends React.Component {
     nombreEvento: "",
     dinero: "",
     comensalesEvento: "",
-    datosComensales: {}
+    datosComensales: {},
+    comensalesQueYaEstan: {}
   }
   componentDidMount(){
     this.setState({nombreEvento: this.props.route.params.nombreEvento})
     this.setState({dinero: this.props.route.params.dinero})
+    this.setState({comensalesQueYaEstan: this.props.route.params.comensales})
     const {email} = auth().currentUser
     this.setState({email})
-    firestore()
-      .collection('usuarios')
-      .doc(email)
-      .get()
+    firestore().collection('usuarios').doc(email).get()
       .then(documentSnapshot => {
         console.log('nombre del usuario: ' + documentSnapshot.get('nombre'))
         this.setState({nombre: documentSnapshot.get('nombre')})
     }).then(() => {
       console.log('email del usuario:  ' + this.state.email);
     });
-
+    console.log(this.state.comensalesQueYaEstan)
     firestore().collection('usuarios').doc(email).get().then(documentSnapshot => {
       console.log('  usuario existe: ', documentSnapshot.exists)
       if(documentSnapshot.exists){
@@ -44,24 +43,27 @@ class PantallaAnadirPersona extends React.Component {
           this.setState({hayAmigos: false})
           //añadir peticiones y añadir el primer email
         }else{
+          console.log(datosAmigos[1])
+          Object.values(this.state.comensalesQueYaEstan).map((comensal) => {
+            Object.entries(datosAmigos).map((amigo) => {
+              if(comensal == amigo[1]){
+                delete datosAmigos[amigo[0]]
+              }
+            })
+          })
+          if(Object.values(datosAmigos).length == 0){
+            this.setState({hayAmigos: false})
+          }
           console.log('  datosAmigos:', true)
           this.setState({datosAmigos: datosAmigos})
           //añadir un email a peticiones que ya está creado y comprobar si ya está incluido
-          Object.values(datosAmigos).map((amigo) => {
-            console.log('  amigo: ', amigo)
-          })
+          
           console.log(this.state.datosAmigos)
           
         }
       }
     })
   }
-  /* componentWillUnmount(){
-    auth().signOut().then(() => console.log('User signed out!'));
-    firestore().collection('usuarios').doc(this.state.email).get().then(documentSnapshot => {
-      firestore().collection('usuarios').doc(this.state.email).update({conectado: false}).then(console.log('User updated!'))
-    })
-  } */
   handleEnviarPeticionEvento = (amigo) => {
     console.log('fasdñlfkjañdolshfaodhfodashfñldhasñflkhaslfjaslfjañlsdfjañlshfao1 ',Object.values(this.state.datosComensales).length)
     console.log('fasdñlfkjañdolshfaodhfodashfñldhasñflkhaslfjaslfjañlsdfjañlshfao1 ',this.state.datosComensales)
@@ -90,16 +92,19 @@ class PantallaAnadirPersona extends React.Component {
           firestore().collection('usuarios').doc(amigo).update({
             peticionEventos: {
               [Math.floor(Math.random() * 10000) + 1]: {
-                nombreEvento: (this.state.nombreEvento + "_" + this.state.email),
+                nombreEvento: (this.state.nombreEvento),
                 dinero: this.state.dinero
               }
             }
           }).then(() => {
             console.log('peticion de envento enviada a: !'+ (this.state.nombreEvento + "_" + this.state.email));
           });
+          firestore().collection('eventos').doc(this.state.nombreEvento + "_" + this.state.email).update({eventoActivo: false})
+          firestore().collection('eventos').doc(this.state.nombreEvento + "_" + this.state.email).update({noConfirmados: {[Math.floor(Math.random() * 10000) + 1]: this.state.email}})
         }else{
           console.log('  datosPeticionesEvento:', true)
           var peticionesRepetidas = false
+
           Object.values(datosPeticionesEvento).map((peticion) => {
             //COMPROBAR SI HAY ALGUNA PETICIÓN YA ENVIADA 
             console.log(peticion)
@@ -116,6 +121,8 @@ class PantallaAnadirPersona extends React.Component {
             .then(() => {
               console.log('petición añadida a las peticiones de evento!');
             })
+            firestore().collection('eventos').doc(this.state.nombreEvento + "_" + this.state.email).update({eventoActivo: false}).then(() => console.log('llegue'))
+            firestore().collection('eventos').doc(this.state.nombreEvento + "_" + this.state.email).update({noConfirmados: {...datosComensales, [Math.floor(Math.random() * 10000) + 1]: this.state.email}})
           }else {
             console.log('ya esta ese usuario')
           }
@@ -138,34 +145,17 @@ class PantallaAnadirPersona extends React.Component {
     }
     console.log('datosPETICIONES3',idAmigoEliminar)
     delete datosAmigos[idAmigoEliminar]
+    if(Object.values(datosAmigos).length == 0){
+      this.setState({hayAmigos: false})
+    }
     console.log('datosPETICIONES4',datosAmigos)
     this.setState({datosAmigos: datosAmigos})
   }
-  handleCrearEvento = () => {
-    console.log('clicado')
-    firestore().collection('eventos').doc(this.state.nombreEvento + "_" + this.state.email).set({
-      nombreEvento: this.state.nombreEvento, 
-      emailAdmin: this.state.email,
-      noConfirmados: this.state.datosComensales,
-      eventoActivo: false,
-      dinero: parseInt(this.state.dinero)
-    }).then(() => {
-      console.log('Evento added!');
-    });
-  }
   render(){
     const navigation = this.context;
-    const elimarEIrAEventosPrincipal = () => {
-      firestore().collection('usuarios').doc(this.state.email).update({datosEventoNoCreado: firestore.FieldValue.delete()})
-      navigation.navigate('EventosPrincipal')
-    }
     const elimarEIrAPantallaPrincipal = () => {
       firestore().collection('usuarios').doc(this.state.email).update({datosEventoNoCreado: firestore.FieldValue.delete()})
       navigation.navigate('PantallaPrincipal')
-    }
-    const crearEventoIrAEventosPrincipal = () => {
-      this.handleCrearEvento()
-      navigation.navigate('EventosPrincipal')
     }
     const listaAmigos = Object.values(this.state.datosAmigos).map((amigo) => {
       {console.log('  peticion listaPeticiones: ', amigo)}
@@ -226,11 +216,15 @@ class PantallaAnadirPersona extends React.Component {
                   <Text style={{textTransform: 'uppercase', fontSize: 20, fontWeight: 'bold', color: '#535473'}}>Amigos</Text>
                   <View style={{flex: 1,flexDirection: 'column', justifyContent: 'flex-start', marginTop: 20}}>
                     {listaAmigos}
-                    <View style={{flex: 2}}>
-                      <TouchableOpacity style={{alignItems: 'center', backgroundColor: '#535473', width: 320, height: 30, justifyContent: 'center', borderRadius: 5, borderColor: 'white', marginTop: 20}} onPress={crearEventoIrAEventosPrincipal}>
-                        <Text style={{ color: "#FFF", fontWeight: "500" }}>Crear evento</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={{alignItems: 'center', backgroundColor: '#535473', width: 320, height: 30, justifyContent: 'center', borderRadius: 5, borderColor: 'white', marginTop: 20}} onPress={elimarEIrAEventosPrincipal} >
+                    <View style={{flex: 1}}>
+                      <TouchableOpacity style={{
+                        alignItems: 'center', 
+                        backgroundColor: '#535473', 
+                        width: 320, height: 30, 
+                        justifyContent: 'center', 
+                        borderRadius: 5, 
+                        borderColor: 'white', 
+                        marginTop: 20}} onPress={() => navigation.navigate('EventosActivos')} >
                         <Text style={{ color: "#FFF", fontWeight: "500" }}>Cancelar</Text>
                       </TouchableOpacity>
                     </View>
@@ -243,7 +237,7 @@ class PantallaAnadirPersona extends React.Component {
                       <TouchableOpacity style={{alignItems: 'center', backgroundColor: '#535473', width: 320, height: 30, justifyContent: 'center', borderRadius: 5, borderColor: 'white', marginTop: 20}} onPress={() => {navigation.navigate('AnadirAmigo')}}>
                         <Text style={{ color: "#FFF", fontWeight: "500" }}>Añadir amigos</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity style={{alignItems: 'center', backgroundColor: '#535473', width: 320, height: 30, justifyContent: 'center', borderRadius: 5, borderColor: 'white', marginTop: 20}} onPress={elimarEIrAEventosPrincipal} >
+                      <TouchableOpacity style={{alignItems: 'center', backgroundColor: '#535473', width: 320, height: 30, justifyContent: 'center', borderRadius: 5, borderColor: 'white', marginTop: 20}} onPress={() => navigation.navigate('EventosActivos')} >
                         <Text style={{ color: "#FFF", fontWeight: "500" }}>Cancelar</Text>
                       </TouchableOpacity>
                     </View>
@@ -306,4 +300,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default PantallaAnadirPersona
+export default PantallaAnadirNuevaPersona
