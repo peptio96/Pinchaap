@@ -47,10 +47,10 @@ class PantallaVerMapa extends React.Component {
             provider={PROVIDER_GOOGLE} // remove if not using Google Maps
             style={styles.map}
             region={{
-              latitude: 37.78825,
-              longitude: -122.4324,
-              latitudeDelta: 0.015,
-              longitudeDelta: 0.0121,
+              latitude: 42.465475,
+              longitude: -2.448541,
+              latitudeDelta: 0.0001,
+              longitudeDelta: 0.0018,
             }}
           />
           </View>

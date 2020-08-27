@@ -1,6 +1,5 @@
 import React from 'react'
 import {View, TouchableOpacity, TouchableNativeFeedback, Image, Text, StyleSheet, TextInput, ImageBackground} from 'react-native'
-import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
 import { NavigationContext } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -11,54 +10,41 @@ class PantallaCreandoEvento extends React.Component {
     email: "",
     nombre: "",
     nombreEvento: "",
-    dineroPorPersona: ""
+    dineroPorPersona: "",
+    errorMessage: ""
   }
   componentDidMount(){
     const {email} = auth().currentUser
-
     this.setState({email})
     firestore().collection('usuarios').doc(email).get().then(documentSnapshot => {
       console.log(documentSnapshot.get('nombre'))
       this.setState({nombre: documentSnapshot.get('nombre')})
     })
   }
-  /* componentWillUnmount(){
-    auth().signOut().then(() => console.log('User signed out!'));
-    firestore().collection('usuarios').doc(this.state.email).get().then(documentSnapshot => {
-      firestore().collection('usuarios').doc(this.state.email).update({conectado: false}).then(console.log('User updated!'))
-    })
-  } */
-  /* handleNombreDinero = () => {
-    
-    console.log('Añadir comensales')
-    console.log('  nombre Evento:   ' + this.state.nombreEvento)
-    console.log('  dinero por persona:   ' + this.state.dineroPorPersona)
-    firestore().collection('usuarios').doc(this.state.emailPeticion).update({datosEventoNoCreado: {nombre: this.state.nombreEvento,dinero: this.state.dineroPorPersona}})
-    .then(() => {
-      console.log('nombre y dinero añadidos al usuario admin!');
-    });
-  } */
   render(){
     const navigation = this.context;
+    
     const handleNombreDinero = () => {
-      console.log('Añadir comensales')
-      console.log(' email: ', this.state.email)
-      console.log('  nombre Evento:   ' + this.state.nombreEvento)
-      console.log('  dinero por persona:   ' + this.state.dineroPorPersona)
-      firestore().collection('usuarios').doc(this.state.email).update({datosEventoNoCreado: {nombreEvento: this.state.nombreEvento,dinero: this.state.dineroPorPersona}})
-      .then(() => {
-        console.log('nombre y dinero añadidos al usuario admin!');
-      });
-      navigation.navigate('AnadirPersona',{nombreEvento: this.state.nombreEvento,dinero: this.state.dineroPorPersona})
+      const dinero = this.state.dineroPorPersona
+      console.log(dinero)
+
+      if((this.state.nombreEvento != "")&&(this.state.dineroPorPersona != "")){
+        if(isNaN(parseInt(dinero))){
+          this.setState({errorMessage: 'No es un número'})
+        }else{
+          firestore().collection('usuarios').doc(this.state.email).update({
+            datosEventoNoCreado: {
+              nombreEvento: this.state.nombreEvento,
+              dinero: this.state.dineroPorPersona
+            }
+          })
+          navigation.navigate('AnadirPersona',{nombreEvento: this.state.nombreEvento,dinero: this.state.dineroPorPersona})
+        }
+      }else{
+        this.setState({errorMessage: 'Nombre evento o dinero están vacíos'})
+      }
+      
     };
-    const elimarEIrAEventosPrincipal = () => {
-      firestore().collection('usuarios').doc(this.state.email).update({datosEventoNoCreado: firestore.FieldValue.delete()})
-      navigation.navigate('EventosPrincipal')
-    }
-    const elimarEIrAPantallaPrincipal = () => {
-      firestore().collection('usuarios').doc(this.state.email).update({datosEventoNoCreado: firestore.FieldValue.delete()})
-      navigation.navigate('PantallaPrincipal')
-    }
     return (
       <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/background1.png')}>
         <View style={{ flex: 1}}>
@@ -67,7 +53,7 @@ class PantallaCreandoEvento extends React.Component {
               <View style={{width: '20%'/*, backgroundColor: 'pink'*/}}>
                 <TouchableOpacity
                   style={{alignItems: "center",justifyContent: "center"}}
-                  onPress={elimarEIrAPantallaPrincipal}
+                  onPress={() => navigation.navigate('PantallaPrincipal')}
                   background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
                 >
                     <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_grande.png')} />
@@ -80,14 +66,13 @@ class PantallaCreandoEvento extends React.Component {
           </View>
           <View style={{flex: 4, left: 20}}>
             <View style={{flex: 2}}>
-              <View style={{flex:1}}></View>
+              <View style={{flex:1}}>
+                {(this.state.errorMessage != "") ? <Text style={styles.error}>{ this.state.errorMessage }</Text> : <View></View>}
+              </View>
               <View style={{flex: 1}}>
                 <Text style={{textTransform: "uppercase", fontSize: 12}}>Nombre evento</Text>
                 <TextInput 
-                  style={{borderBottomColor: "#8A8F9E",borderBottomWidth: StyleSheet.hairlineWidth,
-                  borderTopColor: "#8A8F9E",borderTopWidth: StyleSheet.hairlineWidth,
-                  borderLeftColor: "#8A8F9E",borderLeftWidth: StyleSheet.hairlineWidth,
-                  borderRightColor: "#8A8F9E",borderRightWidth: StyleSheet.hairlineWidth, height:35, marginTop: 20, borderRadius: 5, width: 320}} 
+                  style={{borderColor: "#8A8F9E",borderWidth: StyleSheet.hairlineWidth, height:35, marginTop: 20, borderRadius: 5, width: 320}} 
                   autoCapitalize="none" 
                   onChangeText={nombreEvento => this.setState({ nombreEvento })}
                   value={this.state.nombreEvento}
@@ -96,10 +81,7 @@ class PantallaCreandoEvento extends React.Component {
               <View style={{flex: 1}}>
                 <Text style={{textTransform: "uppercase", fontSize: 12}}>Dinero</Text>
                 <TextInput 
-                  style={{borderBottomColor: "#8A8F9E",borderBottomWidth: StyleSheet.hairlineWidth,
-                  borderTopColor: "#8A8F9E",borderTopWidth: StyleSheet.hairlineWidth,
-                  borderLeftColor: "#8A8F9E",borderLeftWidth: StyleSheet.hairlineWidth,
-                  borderRightColor: "#8A8F9E",borderRightWidth: StyleSheet.hairlineWidth, height:35, marginTop: 20, borderRadius: 5, width: 320}} 
+                  style={{borderColor: "#8A8F9E",borderWidth: StyleSheet.hairlineWidth, height:35, marginTop: 20, borderRadius: 5, width: 320}} 
                   autoCapitalize="none"  
                   keyboardType= 'numeric'
                   onChangeText={dineroPorPersona => this.setState({ dineroPorPersona })}
@@ -128,7 +110,7 @@ class PantallaCreandoEvento extends React.Component {
                 justifyContent: 'center', 
                 borderRadius: 5, 
                 borderColor: 'white',
-                marginTop: 20}} onPress={elimarEIrAEventosPrincipal} >
+                marginTop: 20}} onPress={() => navigation.navigate('EventosPrincipal')} >
                 <Text style={{ color: "#FFF", fontWeight: "500" }}>Cancelar</Text>
               </TouchableOpacity>
             </View>

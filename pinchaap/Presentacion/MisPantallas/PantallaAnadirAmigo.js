@@ -1,6 +1,5 @@
 import React from 'react'
-import {View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Image, ImageBackground} from 'react-native'
-import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
+import {View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Image, ImageBackground, Alert} from 'react-native'
 import { NavigationContext } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -11,75 +10,84 @@ class PantallaAnadirAmigo extends React.Component {
     email: "",
     nombre: "",
     emailPeticion: "",
-    numeroPeticion: ""
+    errorMessage: ""
   }
   componentDidMount(){
     const {email} = auth().currentUser
     this.setState({email})
-    firestore()
-      .collection('usuarios')
-      .doc(email)
-      .get()
-      .then(documentSnapshot => {
-        console.log('nombre del usuario: ' + documentSnapshot.get('nombre'))
-        this.setState({nombre: documentSnapshot.get('nombre')})
-    }).then(() => {
-      console.log('email del usuario:  ' + this.state.email);
-    });
-  }
-  /* componentWillUnmount(){
-    auth().signOut().then(() => console.log('User signed out!'));
-    firestore().collection('usuarios').doc(this.state.email).get().then(documentSnapshot => {
-      firestore().collection('usuarios').doc(this.state.email).update({conectado: false}).then(console.log('User updated!'))
+    firestore().collection('usuarios').doc(email).get().then(documentSnapshot => {
+      this.setState({nombre: documentSnapshot.get('nombre')})
     })
-  } */
+  }
+  validate = (text) => {
+    console.log(text); 
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ ; 
+    if(reg.test(text) === false) { 
+      console.log("Email is Not Correct");
+      return false; 
+    } else { 
+      console.log("Email is Correct");
+      return true
+    } 
+  } 
+
   handleEnviarInvitacion = () => {
-    console.log('clicadoEnviarInvitación')
-    console.log('  emailPeticion:   ' + this.state.emailPeticion)
-    firestore().collection('usuarios').doc(this.state.emailPeticion).get().then(documentSnapshot => {
-      console.log('  usuario existe: ', documentSnapshot.exists)
-      if(documentSnapshot.exists){
-        console.log('  datos usuario:  ', documentSnapshot.data())
-        const datosPeticiones = documentSnapshot.get('peticiones')
-        if(datosPeticiones==undefined){
-          console.log('  datosPeticiones:', false)
-          //añadir peticiones y añadir el primer email
-          firestore().collection('usuarios').doc(this.state.emailPeticion).update({peticiones: {[Math.floor(Math.random() * 10000) + 1]: this.state.email}})
-          .then(() => {
-            console.log('usuario añadido a las peticiones de amistad!');
-          });
+    if(this.state.emailPeticion==""){
+      this.setState({errorMessage: 'El campo buscar amigos está vacío'})
+    }else{
+      if(this.validate(this.state.emailPeticion)){
+        if(this.state.emailPeticion == this.state.email){
+          this.setState({errorMessage: 'No te puedes añadir como amigo'})
         }else{
-          console.log('  datosPeticiones:', true)
-          //añadir un email a peticiones que ya está creado y comprobar si ya está incluido
-          var peticionesRepetidas = false
-          Object.values(datosPeticiones).map((peticion) => {
-            if(peticion == this.state.email){
-              peticionesRepetidas = true
+          firestore().collection('usuarios').doc(this.state.emailPeticion).get().then(documentSnapshot => {
+            if(documentSnapshot.exists){
+              const datosPeticiones = documentSnapshot.get('peticiones')
+              if(datosPeticiones==undefined){
+                firestore().collection('usuarios').doc(this.state.emailPeticion).update({
+                  peticiones: {
+                    [Math.floor(Math.random() * 10000) + 1]: this.state.emailPeticion}
+                  }
+                ).then(() => {
+                  console.log('usuario añadido a las peticiones de amistad!');
+                  Alert.alert('Pinchapp','Petición Enviada',[{text: "Aceptar"}])
+                });
+              }else{
+                console.log('  datosPeticiones:', true)
+                //añadir un email a peticiones que ya está creado y comprobar si ya está incluido
+                var peticionesRepetidas = false
+                Object.values(datosPeticiones).map((peticion) => {
+                  if(peticion == this.state.email){
+                    peticionesRepetidas = true
+                  }
+                })
+                if(!peticionesRepetidas){
+                  const nuevaPeticion = {...datosPeticiones, [Math.floor(Math.random() * 10000) + 1]: this.state.emailPeticion}
+                  firestore().collection('usuarios').doc(this.state.emailPeticion).update({peticiones: nuevaPeticion})
+                  .then(() => {
+                    console.log('usuario añadido a las peticiones de amistad!');
+                    Alert.alert('Pinchapp','Petición Enviada',[{text: "Aceptar"}])
+                  })
+                }else {
+                  console.log('ya esta ese usuario')
+                  this.setState({errorMessage: 'ya le has enviado una petición a ese usuario'})
+                }
+              }
+            }else{
+              this.setState({errorMessage: 'No existe ese usuario, prueba otro'})
             }
           })
-          if(!peticionesRepetidas){
-            console.log('  datosPeticiones dato1: ',Object.values(datosPeticiones)[0])
-            console.log('  peticiones: ', Object.keys(datosPeticiones).length)
-            this.setState({numeroPeticion: Object.keys(datosPeticiones).length+1})
-            const nuevaPeticion = {...datosPeticiones, [Math.floor(Math.random() * 10000) + 1]: this.state.email}
-            console.log(nuevaPeticion)
-            firestore().collection('usuarios').doc(this.state.emailPeticion).update({peticiones: nuevaPeticion})
-            .then(() => {
-              console.log('usuario añadido a las peticiones de amistad!');
-            })
-          }else {
-            console.log('ya esta ese usuario')
-          }
-          
         }
+      }else{
+        this.setState({errorMessage: 'El campo buscar amigos no tiene formato de correo electrónico'})
       }
-    })
+    }
+    
   }
   render(){
     const navigation = this.context;
     return (
       <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/background1.png')}>
-        <View style={styles.container}>
+        <View style={{flex: 1}}>
           <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
             <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
               <View style={{width: '20%'/*, backgroundColor: 'pink'*/}}>
@@ -111,12 +119,12 @@ class PantallaAnadirAmigo extends React.Component {
                 </View>
 
                 <View style={{height: '100%',justifyContent: 'center', width: '80%', alignItems: 'center', /*backgroundColor: 'green'*/}}>
+                  <View>
+                    {(this.state.errorMessage != "") ? <Text style={styles.error}>{ this.state.errorMessage }</Text> : <View></View>}
+                  </View>
                   <Text style={{textTransform: "uppercase", fontSize: 12}}>Buscar amigos</Text>
                   <TextInput 
-                    style={{borderBottomColor: "#8A8F9E",borderBottomWidth: StyleSheet.hairlineWidth,
-                    borderTopColor: "#8A8F9E",borderTopWidth: StyleSheet.hairlineWidth,
-                    borderLeftColor: "#8A8F9E",borderLeftWidth: StyleSheet.hairlineWidth,
-                    borderRightColor: "#8A8F9E",borderRightWidth: StyleSheet.hairlineWidth, height:35, marginTop: 20, borderRadius: 5, width: 320}} 
+                    style={styles.input} 
                     autoCapitalize="none" 
                     onChangeText={emailPeticion => this.setState({ emailPeticion })}
                   ></TextInput>
@@ -146,6 +154,14 @@ class PantallaAnadirAmigo extends React.Component {
   }
 }
 const styles = StyleSheet.create({
+  input: {
+    borderColor: "#8A8F9E",
+    borderWidth: StyleSheet.hairlineWidth,
+    height:35, 
+    marginTop: 20, 
+    borderRadius: 5, 
+    width: 320
+  },
   container: {
     flex: 1
   },
@@ -175,14 +191,6 @@ const styles = StyleSheet.create({
     color: "#8A8F9E",
     fontSize: 10,
     textTransform: "uppercase"
-  },
-  input: {
-    borderBottomColor: "#8A8F9E",
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    height: 40,
-    fontSize: 15,
-    color: "#161F3D",
-    width: 200
   },
   button: {
     marginHorizontal: 30,

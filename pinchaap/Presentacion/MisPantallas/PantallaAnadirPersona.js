@@ -1,5 +1,5 @@
 import React from 'react'
-import {View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Image, ImageBackground} from 'react-native'
+import {View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Image, ImageBackground, Alert} from 'react-native'
 import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
 import { NavigationContext } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
@@ -15,7 +15,8 @@ class PantallaAnadirPersona extends React.Component {
     nombreEvento: "",
     dinero: "",
     comensalesEvento: "",
-    datosComensales: {}
+    datosComensales: {},
+    hayPeticiones: false,
   }
   componentDidMount(){
     this.setState({nombreEvento: this.props.route.params.nombreEvento})
@@ -56,12 +57,6 @@ class PantallaAnadirPersona extends React.Component {
       }
     })
   }
-  /* componentWillUnmount(){
-    auth().signOut().then(() => console.log('User signed out!'));
-    firestore().collection('usuarios').doc(this.state.email).get().then(documentSnapshot => {
-      firestore().collection('usuarios').doc(this.state.email).update({conectado: false}).then(console.log('User updated!'))
-    })
-  } */
   handleEnviarPeticionEvento = (amigo) => {
     console.log('fasdñlfkjañdolshfaodhfodashfñldhasñflkhaslfjaslfjañlsdfjañlshfao1 ',Object.values(this.state.datosComensales).length)
     console.log('fasdñlfkjañdolshfaodhfodashfñldhasñflkhaslfjaslfjañlsdfjañlshfao1 ',this.state.datosComensales)
@@ -96,6 +91,7 @@ class PantallaAnadirPersona extends React.Component {
             }
           }).then(() => {
             console.log('peticion de envento enviada a: !'+ (this.state.nombreEvento + "_" + this.state.email));
+            this.setState({hayPeticiones: true})
           });
         }else{
           console.log('  datosPeticionesEvento:', true)
@@ -115,6 +111,7 @@ class PantallaAnadirPersona extends React.Component {
             firestore().collection('usuarios').doc(amigo).update({peticionEventos: nuevaPeticion})
             .then(() => {
               console.log('petición añadida a las peticiones de evento!');
+              this.setState({hayPeticiones: true})
             })
           }else {
             console.log('ya esta ese usuario')
@@ -143,29 +140,28 @@ class PantallaAnadirPersona extends React.Component {
   }
   handleCrearEvento = () => {
     console.log('clicado')
-    firestore().collection('eventos').doc(this.state.nombreEvento + "_" + this.state.email).set({
-      nombreEvento: this.state.nombreEvento, 
-      emailAdmin: this.state.email,
-      noConfirmados: this.state.datosComensales,
-      eventoActivo: false,
-      dinero: parseInt(this.state.dinero)
-    }).then(() => {
-      console.log('Evento added!');
-    });
+    if(this.state.hayPeticiones){
+      firestore().collection('eventos').doc(this.state.nombreEvento + "_" + this.state.email).set({
+        nombreEvento: this.state.nombreEvento, 
+        emailAdmin: this.state.email,
+        noConfirmados: this.state.datosComensales,
+        eventoActivo: false,
+        dinero: parseInt(this.state.dinero)
+      }).then(() => {
+        console.log('Evento added!');
+      });
+    }else{
+      Alert.alert('Error','No has enviado ninguna petición \nEnvíala',[{text: "Aceptar"}])
+    }
+    
   }
   render(){
     const navigation = this.context;
-    const elimarEIrAEventosPrincipal = () => {
-      firestore().collection('usuarios').doc(this.state.email).update({datosEventoNoCreado: firestore.FieldValue.delete()})
-      navigation.navigate('EventosPrincipal')
-    }
-    const elimarEIrAPantallaPrincipal = () => {
-      firestore().collection('usuarios').doc(this.state.email).update({datosEventoNoCreado: firestore.FieldValue.delete()})
-      navigation.navigate('PantallaPrincipal')
-    }
     const crearEventoIrAEventosPrincipal = () => {
       this.handleCrearEvento()
-      navigation.navigate('EventosPrincipal')
+      if(this.state.hayPeticiones){
+        Alert.alert('Pinchapp','Ya se ha creado el Evento',[{text: "Aceptar",onPress: () => navigation.navigate('EventosPrincipal')}])
+      }
     }
     const listaAmigos = Object.values(this.state.datosAmigos).map((amigo) => {
       {console.log('  peticion listaPeticiones: ', amigo)}
@@ -209,7 +205,7 @@ class PantallaAnadirPersona extends React.Component {
               <View style={{width: '20%'/*, backgroundColor: 'pink'*/}}>
                 <TouchableOpacity
                   style={{alignItems: "center",justifyContent: "center"}}
-                  onPress={elimarEIrAPantallaPrincipal}
+                onPress={() => navigation.navigate('PantallaPrincipal')}
                   background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
                 >
                     <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_grande.png')} />
@@ -230,7 +226,7 @@ class PantallaAnadirPersona extends React.Component {
                       <TouchableOpacity style={{alignItems: 'center', backgroundColor: '#535473', width: 320, height: 30, justifyContent: 'center', borderRadius: 5, borderColor: 'white', marginTop: 20}} onPress={crearEventoIrAEventosPrincipal}>
                         <Text style={{ color: "#FFF", fontWeight: "500" }}>Crear evento</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity style={{alignItems: 'center', backgroundColor: '#535473', width: 320, height: 30, justifyContent: 'center', borderRadius: 5, borderColor: 'white', marginTop: 20}} onPress={elimarEIrAEventosPrincipal} >
+                      <TouchableOpacity style={{alignItems: 'center', backgroundColor: '#535473', width: 320, height: 30, justifyContent: 'center', borderRadius: 5, borderColor: 'white', marginTop: 20}} onPress={() => navigation.navigate('EventosPrincipal')} >
                         <Text style={{ color: "#FFF", fontWeight: "500" }}>Cancelar</Text>
                       </TouchableOpacity>
                     </View>
@@ -243,7 +239,7 @@ class PantallaAnadirPersona extends React.Component {
                       <TouchableOpacity style={{alignItems: 'center', backgroundColor: '#535473', width: 320, height: 30, justifyContent: 'center', borderRadius: 5, borderColor: 'white', marginTop: 20}} onPress={() => {navigation.navigate('AnadirAmigo')}}>
                         <Text style={{ color: "#FFF", fontWeight: "500" }}>Añadir amigos</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity style={{alignItems: 'center', backgroundColor: '#535473', width: 320, height: 30, justifyContent: 'center', borderRadius: 5, borderColor: 'white', marginTop: 20}} onPress={elimarEIrAEventosPrincipal} >
+                      <TouchableOpacity style={{alignItems: 'center', backgroundColor: '#535473', width: 320, height: 30, justifyContent: 'center', borderRadius: 5, borderColor: 'white', marginTop: 20}} onPress={() => navigation.navigate('EventosPrincipal')} >
                         <Text style={{ color: "#FFF", fontWeight: "500" }}>Cancelar</Text>
                       </TouchableOpacity>
                     </View>

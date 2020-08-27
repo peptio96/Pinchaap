@@ -1,6 +1,5 @@
 import React from 'react'
-import {View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Image, ImageBackground} from 'react-native'
-import BotonPersonal from '../AdministrarPantallas/BotonPersonal'
+import {View, Text, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Image, ImageBackground} from 'react-native'
 import { NavigationContext } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -17,11 +16,7 @@ class PantallaAmigosPendientes extends React.Component {
   componentDidMount(){
     const {email} = auth().currentUser
     this.setState({email})
-    firestore()
-      .collection('usuarios')
-      .doc(email)
-      .get()
-      .then(documentSnapshot => {
+    firestore().collection('usuarios').doc(email).get().then(documentSnapshot => {
         console.log('nombre del usuario: ' + documentSnapshot.get('nombre'))
         this.setState({nombre: documentSnapshot.get('nombre')})
     }).then(() => {
@@ -34,29 +29,14 @@ class PantallaAmigosPendientes extends React.Component {
         console.log('  datos usuario:  ', documentSnapshot.data())
         const datosPeticiones = documentSnapshot.get('peticiones')
         if(datosPeticiones==undefined){
-          console.log('  datosPeticiones:', false)
-          console.log('  no hay peticiones')
           this.setState({hayPeticiones: false})
-
-          //añadir peticiones y añadir el primer email
         }else{
-          console.log('  datosPeticiones:', true)
           this.setState({datosPeticiones: datosPeticiones})
-          //añadir un email a peticiones que ya está creado y comprobar si ya está incluido
-          Object.values(datosPeticiones).map((peticion) => {
-            console.log('  peticion: ', peticion)
-          })
-          console.log(this.state.datosPeticiones)
+          this.setState({hayPeticiones: true})
         }
       }
     })
   }
-  /* componentWillUnmount(){
-    auth().signOut().then(() => console.log('User signed out!'));
-    firestore().collection('usuarios').doc(this.state.email).get().then(documentSnapshot => {
-      firestore().collection('usuarios').doc(this.state.email).update({conectado: false}).then(console.log('User updated!'))
-    })
-  } */
   handleAceptarAmistad = (peticion) => {
     firestore().collection('usuarios').doc(peticion).get().then(documentSnapshot => {
       console.log('  usuario existe: ', documentSnapshot.exists)
@@ -96,8 +76,6 @@ class PantallaAmigosPendientes extends React.Component {
         }
       }
     })
-    /* this.forceUpdate()
-    this.setState({state: this.state}) */
   }
 
   handleEliminarPeticion = (peticion) => {
@@ -124,10 +102,6 @@ class PantallaAmigosPendientes extends React.Component {
         this.setState({datosPeticiones: datosPeticiones})
       }
     })
-    
-    /* this.render()
-    this.forceUpdate()
-    this.setState({state: this.state}) */
   }
   
   render(){

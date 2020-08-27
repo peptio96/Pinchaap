@@ -59,83 +59,58 @@ class PantallaAmigos extends React.Component {
   
   render(){
     const navigation = this.context;
-    if(this.state.hayAmigos){
-      const listaAmigos = Object.values(this.state.datosAmigos).map((amigo) => {
-        {console.log('  peticion listaPeticiones: ', amigo)}
-        return(
-          <View key={amigo} style={{/* backgroundColor: 'red',  */flex: 1, height: 50, flexDirection: 'row'}}>
-            <View style={{/* backgroundColor: 'red', */ width:50,height: 50}}>
-              <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_persona.png')}></Image>
-            </View>
-            <View style={{/* backgroundColor: 'pink', */ height: 50,width: '80%', flexDirection: 'column'}}>
-              <Text style={{textAlign: 'center', fontWeight: 'bold',fontSize: 18,marginTop: 0, justifyContent: 'center' }}>{amigo}</Text>
-            </View>
+    const listaAmigos = Object.values(this.state.datosAmigos).map((amigo) => {
+      {console.log('  peticion listaPeticiones: ', amigo)}
+      return(
+        <View key={amigo} style={{/* backgroundColor: 'red',  */flex: 1, height: 50, flexDirection: 'row'}}>
+          <View style={{/* backgroundColor: 'red', */ width:50,height: 50}}>
+            <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_persona.png')}></Image>
           </View>
-        )
-        
-      })
-      return (
-        <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/background1.png')}>
-          <View style={styles.container}>
-            <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
-              <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
-                <View style={{width: '20%'/*, backgroundColor: 'pink'*/}}>
-                  <TouchableOpacity
-                    style={{alignItems: "center",justifyContent: "center"}}
-                    onPress={() => navigation.navigate('PantallaPrincipal')}
-                    background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
-                  >
-                      <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_grande.png')} />
-                  </TouchableOpacity>
-                </View>
-                <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
-                  <Image style={{width: 120, height: 50, marginHorizontal: 52, marginTop: 10}}  source={require('../imagenes/fuente.png')} />
-                </View>
-              </View>
-            </View>
-            <View style={{flex: 4, left: 20}}>
-              <Text>Amigos</Text>
-              <View style={{flex: 1,flexDirection: 'column', justifyContent: 'flex-start', marginTop: 20}}>
-                {listaAmigos}
-                <View style={{flex: 2}}/>
-              </View>
-            </View>
-            
+          <View style={{/* backgroundColor: 'pink', */ height: 50,width: '80%', flexDirection: 'column'}}>
+            <Text style={{textAlign: 'center', fontWeight: 'bold',fontSize: 18,marginTop: 0, justifyContent: 'center' }}>{amigo}</Text>
           </View>
-        </ImageBackground>
+        </View>
       )
-    }else{
-      return (
-        <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/background1.png')}>
-          <View style={styles.container}>
-            <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
-              <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
-                <View style={{width: '20%'/*, backgroundColor: 'pink'*/}}>
-                  <TouchableOpacity
-                    style={{alignItems: "center",justifyContent: "center"}}
-                    onPress={() => navigation.navigate('PantallaPrincipal')}
-                    background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
-                  >
-                      <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_grande.png')} />
-                  </TouchableOpacity>
-                </View>
-                <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
-                  <Image style={{width: 120, height: 50, marginHorizontal: 52, marginTop: 10}}  source={require('../imagenes/fuente.png')} />
-                </View>
+      
+    })
+    return (
+      <ImageBackground style={{width: '100%', height: '100%'}} source={require('../imagenes/background1.png')}>
+        <View style={styles.container}>
+          <View style={{flex: 0.4/*, backgroundColor: 'blue'*/}}>
+            <View style={{flexDirection: 'row', justifyContent: 'center',alignItems: 'center', position: 'relative', width: '100%', height: '100%'}}>
+              <View style={{width: '20%'/*, backgroundColor: 'pink'*/}}>
+                <TouchableOpacity
+                  style={{alignItems: "center",justifyContent: "center"}}
+                  onPress={() => navigation.navigate('PantallaPrincipal')}
+                  background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}
+                >
+                    <Image style={{width: 50, height: 50}} source={require('../imagenes/logo_grande.png')} />
+                </TouchableOpacity>
               </View>
-            </View>
-            <View style={{flex: 4, left: 20}}>
-              <View style={{flexDirection: 'row', width: '100%', height: '100%'}}>
-                <View style={{flex: 2, /* backgroundColor: 'red', */ left: 20}}>
-                  <Text>No hay amigos</Text>
-                </View>
+              <View style={{width: '80%'/*, backgroundColor: 'green'*/}}>
+                <Image style={{width: 120, height: 50, marginHorizontal: 52, marginTop: 10}}  source={require('../imagenes/fuente.png')} />
               </View>
             </View>
           </View>
-        </ImageBackground>
-      )
-    }
-    
+          {this.state.hayAmigos 
+            ? <View style={{flex: 4, left: 20}}>
+                <Text style={{textTransform: 'uppercase', fontSize: 20, fontWeight: 'bold', color: '#535473'}}>Amigos</Text>
+                <View style={{flex: 1,flexDirection: 'column', justifyContent: 'flex-start', marginTop: 20}}>
+                  {listaAmigos}
+                  <View style={{flex: 2}}/>
+                </View>
+              </View>
+            : <View style={{flex: 4, left: 20}}>
+                <View style={{flexDirection: 'row', width: '100%', height: '100%'}}>
+                  <View style={{flex: 2, /* backgroundColor: 'red', */ left: 20}}>
+                    <Text style={{textTransform: 'uppercase', fontSize: 20, fontWeight: 'bold', color: '#535473'}}>No hay amigos</Text>
+                  </View>
+                </View>
+              </View>
+          }
+        </View>
+      </ImageBackground>
+    )
   }
 }
 const styles = StyleSheet.create({
