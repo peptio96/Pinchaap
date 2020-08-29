@@ -35,7 +35,6 @@ class PantallaRegistro extends React.Component {
     }else{
       this.setState({errorMessage: 'Alguna de las tres opciones está vacía'})
     }
-    
   }
   static contextType = NavigationContext;
   render(){

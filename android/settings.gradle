@@ -1,4 +1,6 @@
 rootProject.name = 'sprint02'
+include ':tipsi-stripe'
+project(':tipsi-stripe').projectDir = new File(rootProject.projectDir, '../node_modules/tipsi-stripe/android')
 include ':@react-native-firebase_firestore'
 project(':@react-native-firebase_firestore').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/firestore/android')
 include ':react-native-maps'

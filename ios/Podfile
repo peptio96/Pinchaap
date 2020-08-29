@@ -10,6 +10,8 @@ target 'sprint02' do
 
   pod 'RNFBFirestore', :path => '../node_modules/@react-native-firebase/firestore'
 
+  pod 'tipsi-stripe', :path => '../node_modules/tipsi-stripe'
+
   target 'sprint02Tests' do
     inherit! :complete
     # Pods for testing

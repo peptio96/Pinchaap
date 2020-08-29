@@ -17,9 +17,9 @@ class PantallaLogin extends React.Component {
       const {email, contrasena} = this.state
       auth().signInWithEmailAndPassword(email, contrasena)
         .then(() => {
-          firestore().collection('usuarios').doc(this.state.email).get().then(documentSnapshot => {
+          firestore().collection('usuarios').doc(email).get().then(documentSnapshot => {
             if (documentSnapshot.get('contrasena') === contrasena){
-              firestore().collection('usuarios').doc(this.state.email).update({conectado: true}).then(console.log('User updated!'))
+              firestore().collection('usuarios').doc(email).update({conectado: true}).then(console.log('User updated!'))
             }
           })
           RootNavigation.navigate('PantallaPrincipal')
@@ -31,6 +31,13 @@ class PantallaLogin extends React.Component {
           if (error.code === 'auth/invalid-email') {
             this.setState({errorMessage: '!Ese correo electrónico es inválido!'})
           }
+          if(error.code === 'auth/wrong-password'){
+            this.setState({errorMessage: 'Contraseña incorrecta'})
+          }
+          if(error.code === 'auth/too-many-requests'){
+            this.setState({errorMessage: 'Demasiados intentos.\nIntentelo en dos minutos'})
+          }
+          console.log(error)
         }
       );
     }else{
